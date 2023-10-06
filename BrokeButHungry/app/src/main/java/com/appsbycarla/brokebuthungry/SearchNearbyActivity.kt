@@ -106,8 +106,6 @@ class SearchNearbyActivity : AppCompatActivity() {
                         "&type=supermarket" +
                         "&key=$apiKey"
 
-                Log.d("Nasaan Ako Tangina", "Request: $urlString")
-
                 CoroutineScope(Dispatchers.IO).launch {
                     try {
                         val url = URL(urlString)
@@ -125,7 +123,8 @@ class SearchNearbyActivity : AppCompatActivity() {
                             val place = results.getJSONObject(i)
                             val name = place.getString("name")
                             val vicinity = place.getString("vicinity")
-                            stringBuilder.append("$name, $vicinity\n")
+                            stringBuilder.append("$name\n$vicinity\n")
+
                         }
 
                         withContext(Dispatchers.Main) {
@@ -232,10 +231,9 @@ class SearchNearbyActivity : AppCompatActivity() {
             val query = intent.getStringExtra("query") ?: return // Adjusted position
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 // Permission granted, proceed with your functionality
-                findNearbyPlaces() //add query later
+                findNearbyPlaces()
             } else {
-                // Permission denied, you might want to display a message to the user.
-                // You might want to disable features that depend on this permission.
+                // Permission denied
             }
         }
     }
