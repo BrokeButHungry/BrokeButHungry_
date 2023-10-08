@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--activity_main.xml-->
+<!-- The root layout for the MainActivity -->
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:id="@+id/pageTitleTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Broke But Hungry Demo!"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- EditText for user input -->
+
+    <!-- Button for initiating the search -->
+
+    <!-- ScrollView for recipe results -->
+    <EditText
+        android:id="@+id/searchEditText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Search A Recipe..."
+        android:padding="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/searchButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pageTitleTextView" />
+
+    <Button
+        android:id="@+id/searchButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="152dp"
+        android:text="Search now!"
+        app:layout_constraintBottom_toTopOf="@+id/scrollView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/searchEditText" />
+
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/searchButton"
+        app:layout_constraintBottom_toTopOf="@+id/bottomButtonLayout"
+        android:fillViewport="true">
+
+        <TextView
+            android:id="@+id/recipeNameTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/recipe_label_text_size"
+            android:padding="8dp"
+            android:scrollbars="vertical" />
+    </ScrollView>
+
+    <!-- Layout for the bottom button -->
+    <LinearLayout
+        android:id="@+id/bottomButtonLayout"
+        android:layout_width="396dp"
+        android:layout_height="109dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <Button
+            android:id="@+id/btnSearchNearby"
+            android:layout_width="171dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
+            android:text="Grocery Stores Near Me" />
+
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
