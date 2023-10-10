@@ -1,28 +1,3 @@
-package com.appsbycarla.brokebuthungry
-import android.Manifest
-import android.content.pm.PackageManager
-import android.os.AsyncTask
-import android.os.Bundle
-import android.view.View
-import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import com.google.android.gms.common.api.ApiException
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.libraries.places.api.Places
-import com.google.android.libraries.places.api.model.Place
-import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest
-import com.google.android.libraries.places.api.net.PlacesClient
-import org.json.JSONObject
-import java.io.BufferedReader
-import java.io.InputStreamReader
-import java.net.HttpURLConnection
-import java.net.URL
-
-
 /*
 09.09.23 Comments by Carla Ramos.
 Algorithm:
@@ -40,7 +15,28 @@ Algorithm:
 5. Display recipe information in the TextView by parsing a JSON response, extracting data, and formatting it.
  */
 
-class MainActivity : AppCompatActivity() {
+//MainActivity.kt
+package com.appsbycarla.brokebuthungry
+import android.content.Intent // for search nearby
+import android.os.AsyncTask
+import android.os.Bundle
+import android.widget.Button
+import android.widget.EditText
+import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import org.json.JSONObject
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import java.net.HttpURLConnection
+import java.net.URL
+import org.json.JSONArray
+import kotlinx.coroutines.*
+import androidx.lifecycle.lifecycleScope
+
+
+
+class    MainActivity : AppCompatActivity() {
 
     private lateinit var searchEditText: EditText
     private lateinit var searchButton: Button
@@ -59,6 +55,14 @@ class MainActivity : AppCompatActivity() {
         searchButton = findViewById(R.id.searchButton)
         recipeNameTextView = findViewById(R.id.recipeNameTextView)
 
+        // NEW Search Nearby Groceries Button
+        val searchNearbyButton: Button = findViewById(R.id.btnSearchNearby)
+        searchNearbyButton.setOnClickListener {
+            val intent = Intent(this, SearchNearbyActivity::class.java)
+            intent.putExtra("query", "supermarket")
+            startActivity(intent)
+        }
+
         // Set a click listener for the searchButton
         searchButton.setOnClickListener {
             // Get the user's query from the searchEditText
@@ -68,11 +72,105 @@ class MainActivity : AppCompatActivity() {
                 // Clear previous results
                 recipeNameTextView.text = "Searching..."
 
-                // Perform the API request
-                FetchRecipesTask().execute(query)
+                searchRecipeWithCoroutine(query)
             }
         }
     }
+
+    private fun searchRecipe(query: String): String? {
+        val apiKey = "b3d0fd73ebb946ca9d282a96c16e4b31" // replace with your Spoonacular API key
+        val apiUrl = "https://api.spoonacular.com/recipes/complexSearch?query=$query&apiKey=$apiKey"
+
+        val url = URL(apiUrl)
+        val connection = url.openConnection() as HttpURLConnection
+        connection.requestMethod = "GET"
+
+        if (connection.responseCode == HttpURLConnection.HTTP_OK) {
+            val reader = BufferedReader(InputStreamReader(connection.inputStream))
+            val response = reader.readText()
+            reader.close()
+
+            val jsonResponse = JSONObject(response)
+            val results = jsonResponse.getJSONArray("results")
+
+            // Assuming you want the ID of the first recipe in the search results
+            if (results.length() > 0) {
+                val firstResult = results.getJSONObject(0)
+                return firstResult.getString("id")
+            }
+        }
+        return null
+    }
+
+    private fun searchRecipeWithCoroutine(query: String) {
+        lifecycleScope.launch {
+            try {
+                val recipeId = withContext(Dispatchers.IO) { searchRecipe(query) }
+                if (recipeId != null) {
+                    val recipeInfo = withContext(Dispatchers.IO) { getRecipeInformation(recipeId) }
+                    // Switching to Main thread to update UI
+                    withContext(Dispatchers.Main) {
+                        recipeNameTextView.text = recipeInfo
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                // Optionally handle errors, maybe update the UI to reflect the error state.
+                withContext(Dispatchers.Main) {
+                    recipeNameTextView.text = "Error occurred: ${e.message}"
+                }
+            }
+        }
+    }
+
+    private fun getRecipeInformation(recipeId: String): String {
+        val apiKey = "b3d0fd73ebb946ca9d282a96c16e4b31" // replace with your Spoonacular API key
+        val apiUrl = "https://api.spoonacular.com/recipes/$recipeId/information?apiKey=$apiKey"
+
+        try {
+            val url = URL(apiUrl)
+            val connection = url.openConnection() as HttpURLConnection
+            connection.requestMethod = "GET"
+
+            if (connection.responseCode == HttpURLConnection.HTTP_OK) {
+                val reader = BufferedReader(InputStreamReader(connection.inputStream))
+                val response = reader.readText()
+                reader.close()
+
+                val jsonResponse = JSONObject(response)
+
+                val ingredientsArray = jsonResponse.getJSONArray("extendedIngredients")
+                val instructions = jsonResponse.getString("instructions")
+
+                val sb = StringBuilder()
+
+                for (i in 0 until ingredientsArray.length()) {
+                    val ingredient = ingredientsArray.getJSONObject(i)
+                    val ingredientInfo = ingredient.getString("original")
+                    sb.append(ingredientInfo).append("\n")
+                }
+
+                sb.append("\nInstructions:\n").append(instructions)
+
+                return sb.toString()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return "Error retrieving recipe information."
+    }
+
+    private fun getRecipeInformationWithCoroutine(recipeId: String) {
+        lifecycleScope.launch {
+            try {
+                val recipeInfo = withContext(Dispatchers.IO) { getRecipeInformation(recipeId) }
+                // If you need to update UI with recipeInfo, do it here.
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
 
     inner class FetchRecipesTask : AsyncTask<String, Void, String>() {
 
