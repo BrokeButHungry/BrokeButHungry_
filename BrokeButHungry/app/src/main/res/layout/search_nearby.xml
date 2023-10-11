@@ -1,3 +1,4 @@
+
 <!-- search_nearby.xml -->
 
 <androidx.constraintlayout.widget.ConstraintLayout
@@ -5,7 +6,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#fbefda">
 
 
     <TextView
@@ -15,8 +17,10 @@
         android:text="Grocery Stores Nearby"
         android:textSize="24sp"
         android:textStyle="bold"
+        android:textColor="@color/white"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp"
+        android:background="#930019"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -26,6 +30,8 @@
         android:layout_width="103dp"
         android:layout_height="63dp"
         android:text="Go back"
+        android:textColor="@color/white"
+        android:backgroundTint="#930019"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -50,6 +56,7 @@
             android:layout_height="wrap_content"
             android:textSize="22sp"
             android:text="Search Results Here..."
+            android:textColor="@color/black"
             android:gravity="center" />
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

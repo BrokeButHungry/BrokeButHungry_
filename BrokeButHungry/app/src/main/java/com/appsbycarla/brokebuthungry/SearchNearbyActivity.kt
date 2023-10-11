@@ -103,7 +103,8 @@ class SearchNearbyActivity : AppCompatActivity() {
                 val urlString = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?" +
                         "location=$latitude,$longitude" +
                         "&radius=$radius" +
-                        "&type=supermarket" +
+                        "&type=grocery_or_supermarket" +
+                        "&keyword=Vons|Costco|Walmart|Ralphs|Trader Joe's|Albertsons|Grocery Outlet" +
                         "&key=$apiKey"
 
                 CoroutineScope(Dispatchers.IO).launch {
@@ -114,6 +115,8 @@ class SearchNearbyActivity : AppCompatActivity() {
                         val inputStream: InputStream = BufferedInputStream(connection.inputStream)
                         val response = inputStream.bufferedReader().use { it.readText() }  // defaults to UTF-8
                         connection.disconnect()
+
+                        Log.d("PlacesAPI", "Response: $response")
 
                         val jsonObject = JSONObject(response)
                         val results = jsonObject.getJSONArray("results")
