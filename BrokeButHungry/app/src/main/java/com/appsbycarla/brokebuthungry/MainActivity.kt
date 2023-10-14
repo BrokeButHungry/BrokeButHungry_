@@ -25,6 +25,7 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.text.HtmlCompat
 import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -33,7 +34,7 @@ import java.net.URL
 import org.json.JSONArray
 import kotlinx.coroutines.*
 import androidx.lifecycle.lifecycleScope
-
+import androidx.recyclerview.widget.RecyclerView
 
 
 class    MainActivity : AppCompatActivity() {
@@ -70,21 +71,27 @@ class    MainActivity : AppCompatActivity() {
             // Check if the query is not empty
             if (query.isNotEmpty()) {
                 // Clear previous results
-                recipeNameTextView.text = "Searching..."
+                recipeNameTextView.text= "Searching..."
 
                 searchRecipeWithCoroutine(query)
             }
         }
     }
-
-    private fun searchRecipe(query: String): String? {
-        val apiKey = "b3d0fd73ebb946ca9d282a96c16e4b31" // replace with your Spoonacular API key
+    /**
+     * Searches for recipes matching the given query and returns their IDs.
+     *
+     * @param query The query string to search for.
+     * @return A list of recipe IDs matching the query or null if no results.
+     */
+    private fun searchRecipe(query: String): List<String>? {
+        val apiKey = "fa02fa2847654f40adab114f3f574335" //"b3d0fd73ebb946ca9d282a96c16e4b31" replace with your Spoonacular API key
         val apiUrl = "https://api.spoonacular.com/recipes/complexSearch?query=$query&apiKey=$apiKey"
 
         val url = URL(apiUrl)
         val connection = url.openConnection() as HttpURLConnection
         connection.requestMethod = "GET"
 
+        // Check if the connection is successful.
         if (connection.responseCode == HttpURLConnection.HTTP_OK) {
             val reader = BufferedReader(InputStreamReader(connection.inputStream))
             val response = reader.readText()
@@ -92,30 +99,43 @@ class    MainActivity : AppCompatActivity() {
 
             val jsonResponse = JSONObject(response)
             val results = jsonResponse.getJSONArray("results")
+            val ids = mutableListOf<String>()
 
-            // Assuming you want the ID of the first recipe in the search results
-            if (results.length() > 0) {
-                val firstResult = results.getJSONObject(0)
-                return firstResult.getString("id")
+            // Extracting recipe IDs from the results.
+            for (i in 0 until results.length()) {
+                val recipe = results.getJSONObject(i)
+                ids.add(recipe.getString("id"))
             }
+
+            return if (ids.isNotEmpty()) ids else null
         }
         return null
     }
 
+    /**
+     * Searches for recipes using coroutines and updates the UI with the results.
+     *
+     * @param query The query string to search for.
+     */
     private fun searchRecipeWithCoroutine(query: String) {
         lifecycleScope.launch {
             try {
-                val recipeId = withContext(Dispatchers.IO) { searchRecipe(query) }
-                if (recipeId != null) {
+                // Fetching the recipe IDs that match the given query.
+                val recipeIds = withContext(Dispatchers.IO) { searchRecipe(query) }
+                val recipeInfos = mutableListOf<String>()
+
+                // Fetching detailed recipe information for each ID.
+                recipeIds?.forEach { recipeId ->
                     val recipeInfo = withContext(Dispatchers.IO) { getRecipeInformation(recipeId) }
-                    // Switching to Main thread to update UI
-                    withContext(Dispatchers.Main) {
-                        recipeNameTextView.text = recipeInfo
-                    }
+                    recipeInfos.add(recipeInfo)
+                }
+
+                // Switching to Main thread to update UI
+                withContext(Dispatchers.Main) {
+                    recipeNameTextView.text = HtmlCompat.fromHtml(recipeInfos.joinToString("<br><br>"), HtmlCompat.FROM_HTML_MODE_LEGACY)
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                // Optionally handle errors, maybe update the UI to reflect the error state.
                 withContext(Dispatchers.Main) {
                     recipeNameTextView.text = "Error occurred: ${e.message}"
                 }
@@ -124,7 +144,7 @@ class    MainActivity : AppCompatActivity() {
     }
 
     private fun getRecipeInformation(recipeId: String): String {
-        val apiKey = "b3d0fd73ebb946ca9d282a96c16e4b31" // replace with your Spoonacular API key
+        val apiKey = "fa02fa2847654f40adab114f3f574335" //"b3d0fd73ebb946ca9d282a96c16e4b31" replace with your Spoonacular API key
         val apiUrl = "https://api.spoonacular.com/recipes/$recipeId/information?apiKey=$apiKey"
 
         try {
@@ -139,18 +159,22 @@ class    MainActivity : AppCompatActivity() {
 
                 val jsonResponse = JSONObject(response)
 
+                val recipeTitle = jsonResponse.getString("title")
                 val ingredientsArray = jsonResponse.getJSONArray("extendedIngredients")
                 val instructions = jsonResponse.getString("instructions")
 
                 val sb = StringBuilder()
 
+                sb.append("<br><b>$recipeTitle</b><br><br>")
+                sb.append("<b>Ingredients:</b><br>")
+
                 for (i in 0 until ingredientsArray.length()) {
                     val ingredient = ingredientsArray.getJSONObject(i)
                     val ingredientInfo = ingredient.getString("original")
-                    sb.append(ingredientInfo).append("\n")
+                    sb.append(ingredientInfo).append("<br>")
                 }
 
-                sb.append("\nInstructions:\n").append(instructions)
+                sb.append("<br><b>Instructions:</b><br><br>").append(instructions.replace("\n", "<br>"))
 
                 return sb.toString()
             }
