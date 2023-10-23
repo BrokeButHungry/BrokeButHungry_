@@ -31,10 +31,10 @@ import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
-import org.json.JSONArray
 import kotlinx.coroutines.*
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.RecyclerView
+
+//import com.appsbycarla.brokebuthungry.RecipeInformation
 
 
 class    MainActivity : AppCompatActivity() {
@@ -162,10 +162,12 @@ class    MainActivity : AppCompatActivity() {
                 val recipeTitle = jsonResponse.getString("title")
                 val ingredientsArray = jsonResponse.getJSONArray("extendedIngredients")
                 val instructions = jsonResponse.getString("instructions")
+                val totalIngredients = ingredientsArray.length() // In progress
 
                 val sb = StringBuilder()
 
                 sb.append("<br><b>$recipeTitle</b><br><br>")
+                sb.append("<b>Total Number of Ingredients:</b> $totalIngredients<br>")
                 sb.append("<b>Ingredients:</b><br>")
 
                 for (i in 0 until ingredientsArray.length()) {
