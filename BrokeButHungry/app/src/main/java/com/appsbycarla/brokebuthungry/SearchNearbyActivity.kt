@@ -26,6 +26,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 
 
+
 class SearchNearbyActivity : AppCompatActivity() {
 
     lateinit var placesClient: PlacesClient
