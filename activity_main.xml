@@ -9,8 +9,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:weightSum="3"
-    android:background="#fbefda"
+    android:background="@drawable/colored_main_background"
     android:gravity="center_horizontal"
     tools:context=".MainActivity">
 
@@ -52,7 +51,9 @@
         android:hint="Search A Recipe..."
         android:textColor="@color/black"
         android:textColorHint="@color/black"
-        android:padding="10dp" />
+        android:padding="10dp"
+        android:textStyle="bold"
+        android:textSize="18sp" />
     <!--        app:layout_constraintBottom_toTopOf="@+id/searchButton"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
@@ -78,7 +79,7 @@
     <ScrollView
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
-        android:layout_height="300dp">
+        android:layout_height="352dp">
         <!--        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/searchButton"
@@ -99,9 +100,9 @@
     <RelativeLayout
         android:id="@+id/bottomButtonLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="77dp"
         android:layout_gravity="bottom"
-        android:gravity="bottom"
+        android:gravity="center"
         android:orientation="horizontal">
         <!--        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -115,15 +116,14 @@
             android:layout_alignParentStart="true"
             android:layout_alignParentEnd="true"
             android:layout_alignParentBottom="true"
-            android:layout_marginStart="102dp"
-            android:layout_marginEnd="108dp"
-            android:layout_marginBottom="45dp"
+            android:layout_marginStart="104dp"
+            android:layout_marginEnd="106dp"
             android:backgroundTint="#930019"
             android:gravity="center"
-            android:textStyle="bold"
             android:text="Grocery Stores"
+            android:textColor="#fefefe"
             android:textSize="18sp"
-            android:textColor="#fefefe" />
+            android:textStyle="bold" />
 
     </RelativeLayout>
 </LinearLayout>
