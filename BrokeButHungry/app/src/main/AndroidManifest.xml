@@ -33,6 +33,7 @@
         </activity>
 
         <activity android:name=".SearchNearbyActivity"/> <!-- NEW -->
+        <activity android:name=".RecipeDetailActivity"/>
 
     </application>
 
