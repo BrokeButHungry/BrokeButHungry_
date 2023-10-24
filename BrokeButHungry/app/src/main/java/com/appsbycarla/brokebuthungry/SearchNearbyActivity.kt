@@ -75,6 +75,10 @@ class SearchNearbyActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Fetches and displays nearby grocery or supermarket locations based on the user's current location.
+     * Uses Google Places API to retrieve the nearby places information.
+     */
     private fun findNearbyPlaces() {
         if (ActivityCompat.checkSelfPermission(
                 this,
