@@ -5,22 +5,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#fbefda"
+    android:background="@drawable/colored_main_background"
     android:gravity="center_horizontal"
     tools:context=".MainActivity">
 
-    <TextView
-        android:id="@+id/pageTitleTextView"
+    <ImageView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:background="#930019"
-        android:gravity="center"
-        android:text="Broke But Hungry Demo!"
-        android:textColor="@color/white"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:typeface="monospace"/>
+        android:layout_height="150dp"
+        android:background="@drawable/bbh_logo_fade" />
 
     <EditText
         android:id="@+id/searchEditText"
@@ -33,23 +25,19 @@
 
     <Button
         android:id="@+id/searchButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_width="200dp"
+        android:layout_height="60dp"
         android:backgroundTint="#930019"
-        android:drawableBottom="@drawable/dino_nuggets_foreground"
-        android:gravity="center"
         android:text="Search now!"
-        android:textColor="@color/white"
+        android:textColor="#fefefe"
         android:textSize="18sp"
         android:textStyle="bold" />
 
     <ScrollView
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:fillViewport="true">
+        android:layout_height="352dp"
+        android:layout_marginHorizontal="16dp">
 
         <LinearLayout
             android:id="@+id/recipesLayout"
@@ -61,10 +49,19 @@
 
     <Button
         android:id="@+id/btnSearchNearby"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="200dp"
+        android:layout_height="60dp"
+        android:layout_alignBottom="@id/btnSearchNearby"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="104dp"
+        android:layout_marginEnd="106dp"
         android:backgroundTint="#930019"
-        android:text="Grocery Stores Near Me"
-        android:textColor="@color/white"/>
+        android:gravity="center"
+        android:text="Grocery Stores"
+        android:textColor="#fefefe"
+        android:textSize="18sp"
+        android:textStyle="bold" />
 
 </LinearLayout>
