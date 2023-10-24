@@ -11,9 +11,15 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.api.model.RectangularBounds
+import com.google.android.libraries.places.api.net.FetchPlaceRequest
+import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
 import com.google.android.libraries.places.api.net.PlacesClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -24,7 +30,6 @@ import java.io.BufferedInputStream
 import java.io.InputStream
 import java.net.HttpURLConnection
 import java.net.URL
-
 
 
 class SearchNearbyActivity : AppCompatActivity() {
@@ -72,7 +77,7 @@ class SearchNearbyActivity : AppCompatActivity() {
 
     /**
      * Fetches and displays nearby grocery or supermarket locations based on the user's current location.
-     * Uses Google Places API to retrieve the nearby places information.
+     * Uses Google Places API to retrieve the nearby places information...
      * Author: Carla Hernandez
      */
     private fun findNearbyPlaces() {
