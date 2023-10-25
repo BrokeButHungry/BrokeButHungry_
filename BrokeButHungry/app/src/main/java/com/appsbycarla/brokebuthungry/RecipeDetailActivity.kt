@@ -90,8 +90,11 @@ class RecipeDetailActivity : AppCompatActivity() {
             val ingredientsArray = jsonResponse.getJSONArray("extendedIngredients")
             val instructions = jsonResponse.getString("instructions")
             val recipeImage = jsonResponse.getString("image")
+            val totalIngredients = ingredientsArray.length() // Eddie's
 
             val sb = StringBuilder()
+            sb.append("<br><b>$recipeTitle</b><br><br>") // Eddie's
+            sb.append("<b>Total Number of Ingredients:</b> $totalIngredients<br>") // Eddie's
             sb.append("<b>Ingredients:</b><br>")
 
             for (i in 0 until ingredientsArray.length()) {
