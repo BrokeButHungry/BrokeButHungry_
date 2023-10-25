@@ -1,0 +1,15 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.BrokeButHungry" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your light theme here. -->
+        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+    </style>
+
+    <style name="Theme.BrokeButHungry" parent="Base.Theme.BrokeButHungry" />
+
+    <style name="Theme.App.SplashScreen" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/tan</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/bbh_splash_180_120</item>
+        <item name="postSplashScreenTheme">@style/Base.Theme.BrokeButHungry</item>
+    </style>
+</resources>
