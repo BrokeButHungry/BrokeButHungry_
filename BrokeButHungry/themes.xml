@@ -9,7 +9,7 @@
 
     <style name="Theme.App.SplashScreen" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@color/tan</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/bbh_splash_180_120</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/bbh_splash_216_144</item>
         <item name="postSplashScreenTheme">@style/Base.Theme.BrokeButHungry</item>
     </style>
 </resources>
