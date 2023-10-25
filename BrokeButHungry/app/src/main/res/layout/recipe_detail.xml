@@ -3,8 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
-    android:background="#FFFFFF">
+    android:background="@drawable/colored_main_background">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -12,28 +11,40 @@
         android:orientation="vertical"
         android:spacing="10dp">
 
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:background="@drawable/recipe_details_banner" />
+
         <TextView
             android:id="@+id/recipeTitleTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="24sp"
+            android:textSize="26sp"
             android:textColor="#000000"
             android:textStyle="bold"
-            android:gravity="center" />
+            android:gravity="center"
+            android:layout_marginHorizontal="12dp"
+            android:layout_marginVertical="12dp" />
 
         <ImageView
             android:id="@+id/recipeImageView"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:scaleType="centerCrop" />
+            android:layout_height="250dp"
+            android:scaleType="centerCrop"
+            android:layout_gravity="center"
+            android:layout_marginHorizontal="12dp"
+            android:paddingTop="12dp"/>
 
         <TextView
             android:id="@+id/recipeDetailsTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            android:textSize="20sp"
             android:textColor="#000000"
-            android:paddingTop="10dp" />
+            android:layout_marginHorizontal="12dp"
+            android:layout_marginVertical="12dp"
+            android:paddingTop="12dp"/>
 
     </LinearLayout>
 </ScrollView>
