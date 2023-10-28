@@ -3,6 +3,7 @@
 package com.appsbycarla.brokebuthungry
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
@@ -54,6 +55,12 @@ class SearchNearbyActivity : AppCompatActivity() {
         backButton.setOnClickListener {
             finish()
         }
+        var mapOpener = findViewById<Button>(R.id.btnMap)
+        mapOpener.setOnClickListener{
+            val intent = Intent(this, MapsActivity::class.java)
+            //intent.putExtra("query", "supermarket")
+            startActivity(intent)
+        }
 
         // Check if the app has location permission
         if (ActivityCompat.checkSelfPermission(
@@ -72,14 +79,6 @@ class SearchNearbyActivity : AppCompatActivity() {
             Log.d("PlacesAPI", "Query: $query")
 //            findNearbyPlaces(query)
             findNearbyPlaces()
-        }
-
-        var mapOpener = findViewById<Button>(R.id.mapButton)
-        mapOpener.setOnClickListener{
-            val intent = Intent(this, MapsActivity::class.java)
-            //intent.putExtra("query", "supermarket")
-            startActivity(intent)
-            // this is for opening the map activity via a buitton
         }
     }
 
@@ -158,8 +157,6 @@ class SearchNearbyActivity : AppCompatActivity() {
             Log.e("LocationError", "Error getting location: $exception")
         }
     }
-
-
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)

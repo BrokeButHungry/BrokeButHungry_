@@ -59,4 +59,14 @@
             android:textColor="@color/black"
             android:gravity="center" />
     </ScrollView>
+
+    <Button
+        android:id="@+id/btnMap"
+        android:layout_width="103dp"
+        android:layout_height="63dp"
+        android:layout_marginBottom="68dp"
+        android:text="Map"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

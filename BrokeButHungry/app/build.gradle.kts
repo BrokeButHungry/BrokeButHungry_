@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId = "com.appsbycarla.brokebuthungry"
-        minSdk = 22
+        minSdk = 29
         targetSdk = 33
         versionCode = 1
         versionName = "1.0"
@@ -50,6 +50,7 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     implementation ("com.google.android.libraries.places:places:3.2.0") // NEW Google Places API
     implementation ("com.google.maps.android:android-maps-utils:3.4.0") // NEW Google Places API
+    implementation("com.google.android.gms:play-services-maps:18.1.0")
     implementation ("com.google.android.gms:play-services-location:21.0.1") // NEW Android Services Location
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
@@ -61,6 +62,5 @@ dependencies {
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
     implementation ("androidx.appcompat:appcompat:1.6.1")
     implementation ("androidx.core:core-splashscreen:1.0.0")
-    implementation("com.google.android.gms:play-services-maps:18.1.0")
 
 }
