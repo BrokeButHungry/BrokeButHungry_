@@ -73,6 +73,14 @@ class SearchNearbyActivity : AppCompatActivity() {
 //            findNearbyPlaces(query)
             findNearbyPlaces()
         }
+
+        var mapOpener = findViewById<Button>(R.id.mapButton)
+        mapOpener.setOnClickListener{
+            val intent = Intent(this, MapsActivity::class.java)
+            //intent.putExtra("query", "supermarket")
+            startActivity(intent)
+            // this is for opening the map activity via a buitton
+        }
     }
 
     /**
@@ -150,6 +158,8 @@ class SearchNearbyActivity : AppCompatActivity() {
             Log.e("LocationError", "Error getting location: $exception")
         }
     }
+
+
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
