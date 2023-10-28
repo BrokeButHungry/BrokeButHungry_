@@ -13,6 +13,7 @@ import android.widget.TextView
 import android.widget.ImageView
 import androidx.core.text.HtmlCompat
 import com.bumptech.glide.Glide
+import android.webkit.WebView
 
 
 class RecipeDetailActivity : AppCompatActivity() {
@@ -24,6 +25,7 @@ class RecipeDetailActivity : AppCompatActivity() {
         val recipeId = intent.getStringExtra("RECIPE_ID")
         if (recipeId != null) {
             fetchAndDisplayRecipeDetails(recipeId)
+            fetchAndDisplayNutritionLabel(recipeId)
         }
     }
 
@@ -61,6 +63,51 @@ class RecipeDetailActivity : AppCompatActivity() {
     }
 
     /**
+     * Attempting to fetch nutritional label for each recipe
+     */
+
+    private fun fetchNutritonalLabel(recipeId: String): String {
+        val apiKey = "420aea8d55f9424b962c04001ef88f3a"
+        val apiUrl = "https://api.spoonacular.com/recipes/$recipeId/nutritionLabel?apiKey=$apiKey"
+
+        val url = URL(apiUrl)
+        val connection = url.openConnection() as HttpURLConnection
+        connection.requestMethod = "GET"
+
+        if (connection.responseCode == HttpURLConnection.HTTP_OK) {
+            val reader = BufferedReader(InputStreamReader(connection.inputStream))
+            val response = reader.readText()
+            reader.close()
+            return response
+        } else {
+            throw Exception("Failed to fetch nutrition label. HTTP Code: ${connection.responseCode}")
+        }
+    }
+
+    private fun displayNutritionLabel(nutritionLabelHtml: String) {
+        val webView: WebView = findViewById(R.id.nutritionLabelWebView)
+        webView.settings.javaScriptEnabled = true
+        webView.loadDataWithBaseURL(null, nutritionLabelHtml, "text/html", "utf-8", null)
+    }
+
+    private fun fetchAndDisplayNutritionLabel(recipeId: String) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val nutritionLabelHtml = fetchNutritonalLabel(recipeId)
+                withContext(Dispatchers.Main) {
+                    // Switch to the main thread to update the UI with the nutrition label HTML
+                    displayNutritionLabel(nutritionLabelHtml)
+                }
+            } catch (e: Exception) {
+                // Handle error if the nutrition label fetching fails
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(this@RecipeDetailActivity, "Failed to fetch nutrition label.", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+    }
+
+    /**
      * Asynchronously fetches detailed information about a specified recipe based on its unique ID from Spoonacular API.
      * Shows the recipe title, image, ingredients, and instructions and returns them as a Triple.
      *
@@ -90,11 +137,11 @@ class RecipeDetailActivity : AppCompatActivity() {
             val ingredientsArray = jsonResponse.getJSONArray("extendedIngredients")
             val instructions = jsonResponse.getString("instructions")
             val recipeImage = jsonResponse.getString("image")
-            val totalIngredients = ingredientsArray.length() // Eddie's
+            val totalIngredients = ingredientsArray.length() // Added
 
             val sb = StringBuilder()
-            sb.append("<br><b>$recipeTitle</b><br><br>") // Eddie's
-            sb.append("<b>Total Number of Ingredients:</b> $totalIngredients<br>") // Eddie's
+            sb.append("<br><b>$recipeTitle</b><br><br>") // Added
+            sb.append("<b>Total Number of Ingredients:</b> $totalIngredients<br>") // Added
             sb.append("<b>Ingredients:</b><br>")
 
             for (i in 0 until ingredientsArray.length()) {
