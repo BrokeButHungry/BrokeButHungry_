@@ -63,7 +63,7 @@ class RecipeDetailActivity : AppCompatActivity() {
     }
 
     /**
-     * Attempting to fetch nutritional label for each recipe
+     * Fetching nutritional label for each recipe via Spoonacular API
      */
 
     private fun fetchNutritonalLabel(recipeId: String): String {
@@ -95,7 +95,7 @@ class RecipeDetailActivity : AppCompatActivity() {
             try {
                 val nutritionLabelHtml = fetchNutritonalLabel(recipeId)
                 withContext(Dispatchers.Main) {
-                    // Switch to the main thread to update the UI with the nutrition label HTML
+                    // Switch to main thread to update the UI with the nutrition label HTML
                     displayNutritionLabel(nutritionLabelHtml)
                 }
             } catch (e: Exception) {
