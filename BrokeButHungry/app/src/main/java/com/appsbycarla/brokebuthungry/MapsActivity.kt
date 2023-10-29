@@ -61,8 +61,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         placesClient = Places.createClient(this)
 
         val query = intent.getStringExtra("query") ?: return  // Adjusted position
-
-        // Check if the app has location permission
         if (ActivityCompat.checkSelfPermission(
                 this, Manifest.permission.ACCESS_FINE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
@@ -72,13 +70,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             ActivityCompat.requestPermissions(
                 this,
                 arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                LOCATION_PERMISSION_REQUEST_CODE
+                SearchNearbyActivity.LOCATION_PERMISSION_REQUEST_CODE
             )
             return
         } else {
             Log.d("PlacesAPI", "Query: $query")
-//            findNearbyPlaces(query)
-            findNearbyPlaces()
         }
     }
 
@@ -90,7 +86,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
         mMap.uiSettings.isZoomControlsEnabled = true
-        //mMap.moveCamera(CameraUpdateFactory.zoomBy(17f))
+        mMap.moveCamera(CameraUpdateFactory.zoomBy(17f))
         var lat = 34.16547
         var long = -119.045097
 
@@ -100,17 +96,17 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         val wholefoods = LatLng(34.239929, -119.178871)
         val costco = LatLng(34.225231, -119.148193)
         val vons = LatLng(34.224941, -119.037064)
-        mMap.addMarker(MarkerOptions().position(target).title("target"))
-        mMap.addMarker(MarkerOptions().position(wholefoods).title("whole foods"))
-        mMap.addMarker(MarkerOptions().position(costco).title("costco"))
-        mMap.addMarker(MarkerOptions().position(vons).title("vons"))
+        //mMap.addMarker(MarkerOptions().position(target).title("target"))
+        //mMap.addMarker(MarkerOptions().position(wholefoods).title("whole foods"))
+        //mMap.addMarker(MarkerOptions().position(costco).title("costco"))
+        //mMap.addMarker(MarkerOptions().position(vons).title("vons"))
 
 
-        mMap.addMarker(MarkerOptions().position(channelislands).title("target"))
+        //mMap.addMarker(MarkerOptions().position(channelislands).title("target"))
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(channelislands, 12.0f))
 
-    }
-    private fun findNearbyPlaces() {
+
+
         if (ActivityCompat.checkSelfPermission(
                 this,
                 Manifest.permission.ACCESS_FINE_LOCATION
@@ -132,69 +128,47 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             location?.let {
                 val latitude = it.latitude
                 val longitude = it.longitude
+                val curLocation = LatLng(latitude, longitude)
                 val radius = 10000 // Define the radius in which you want to search places
-
-                val apiKey = "AIzaSyCZR0gVZBwoIod0xP9P_0TWI4PUb4Wfr9A" // Replace with your actual API key
+                mMap.addMarker(MarkerOptions().position(curLocation).title("currentLocation"))
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(curLocation, 12.0f))
+                val apiKey =
+                    "AIzaSyCZR0gVZBwoIod0xP9P_0TWI4PUb4Wfr9A" // Replace with your actual API key
                 val urlString = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?" +
                         "location=$latitude,$longitude" +
                         "&radius=$radius" +
                         "&type=grocery_or_supermarket" +
                         "&keyword=Vons|Costco|Walmart|Ralphs|Trader Joe's|Albertsons|Grocery Outlet" +
                         "&key=$apiKey"
+                //CoroutineScope(Dispatchers.IO).launch {
+                try {
+                    val url = URL(urlString)
+                    val connection: HttpURLConnection =
+                        url.openConnection() as HttpURLConnection
+                    connection.requestMethod = "GET"
+                    val inputStream: InputStream = BufferedInputStream(connection.inputStream)
+                    val response =
+                        inputStream.bufferedReader().use { it.readText() }  // defaults to UTF-8
+                    connection.disconnect()
+                    Log.d("PlacesAPI", "Response: $response")
 
-                CoroutineScope(Dispatchers.IO).launch {
-                    try {
-                        val url = URL(urlString)
-                        val connection: HttpURLConnection = url.openConnection() as HttpURLConnection
-                        connection.requestMethod = "GET"
-                        val inputStream: InputStream = BufferedInputStream(connection.inputStream)
-                        val response = inputStream.bufferedReader().use { it.readText() }  // defaults to UTF-8
-                        connection.disconnect()
+                    val jsonObject = JSONObject(response)
+                    val results = jsonObject.getJSONArray("results")
 
-                        Log.d("PlacesAPI", "Response: $response")
-
-                        val jsonObject = JSONObject(response)
-                        val results = jsonObject.getJSONArray("results")
-
-                        for (i in 0 until results.length()) {
-                            val place = results.getJSONObject(i)
-                            val name = place.getString("name")
-                            val vicinity = place.getString("geolocation")
-                            val geo = LatLng(34.216969, -119.072578)
-                            mMap.addMarker(MarkerOptions().position(geo).title(name))
-
-                        }
-                    } catch (e: Exception) {
-                        Log.e("PlacesAPI", "Error: $e")
+                    for (i in 0 until results.length()) {
+                        val place = results.getJSONObject(i)
+                        val name = place.getString("name")
+                        val geo = place.getJSONObject("geometry")
+                        val loc = geo.getJSONObject("location")
+                        val lat = loc.getString("lat").toDouble()
+                        val lng = loc.getString("lng").toDouble()
+                        val location = LatLng(lat, lng)
+                        mMap.addMarker(MarkerOptions().position(location).title(name))
                     }
+                } catch (e: Exception) {
+                    Log.e("PlacesAPI", "Error: $e")
                 }
-            } ?: run {
-                Log.e("LocationError", "Location is null")
-            }
-        }.addOnFailureListener { exception ->
-            Log.e("LocationError", "Error getting location: $exception")
-        }
-    }
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
-            val query = intent.getStringExtra("query") ?: return // Adjusted position
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permission granted, proceed with your functionality
-                findNearbyPlaces()
-            } else {
-                // Permission denied
             }
         }
-    }
-
-    // This function will contain your logic to find places
-    private fun findPlaces() {
-        // Your existing logic to find places
-    }
-
-    companion object {
-        const val LOCATION_PERMISSION_REQUEST_CODE = 1
     }
 }
