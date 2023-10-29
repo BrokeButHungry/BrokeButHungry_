@@ -38,6 +38,8 @@ class SearchNearbyActivity : AppCompatActivity() {
     lateinit var placesClient: PlacesClient
     lateinit var fusedLocationClient: FusedLocationProviderClient
 
+    var returnString ="" //string for use in map marking
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.search_nearby)
@@ -58,7 +60,7 @@ class SearchNearbyActivity : AppCompatActivity() {
         var mapOpener = findViewById<Button>(R.id.btnMap)
         mapOpener.setOnClickListener{
             val intent = Intent(this, MapsActivity::class.java)
-            //intent.putExtra("query", "supermarket")
+            intent.putExtra("JSON", returnString)
             startActivity(intent)
         }
 
@@ -127,6 +129,7 @@ class SearchNearbyActivity : AppCompatActivity() {
                         val inputStream: InputStream = BufferedInputStream(connection.inputStream)
                         val response = inputStream.bufferedReader().use { it.readText() }  // defaults to UTF-8
                         connection.disconnect()
+                        returnString = response
 
                         Log.d("PlacesAPI", "Response: $response")
 
