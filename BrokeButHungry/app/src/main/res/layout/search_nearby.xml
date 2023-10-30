@@ -7,56 +7,60 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#fbefda">
+    android:background="@drawable/colored_main_background">
 
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:background="@drawable/grocery_nearby_banner" />
 
-    <TextView
-        android:id="@+id/nearbyTitleTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Grocery Stores Nearby"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:textColor="@color/white"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp"
-        android:background="#930019"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        <!--<TextView
+            android:id="@+id/nearbyTitleTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Grocery Stores Nearby"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:background="#930019"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />-->
 
-    <Button
-        android:id="@+id/btnBack"
-        android:layout_width="103dp"
-        android:layout_height="63dp"
-        android:text="Go back"
-        android:textColor="@color/white"
-        android:backgroundTint="#930019"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintVertical_bias="0.953" />
+        <Button
+            android:id="@+id/btnBack"
+            android:layout_width="103dp"
+            android:layout_height="63dp"
+            android:text="Go back"
+            android:textColor="@color/white"
+            android:backgroundTint="#930019"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintVertical_bias="0.953" />
 
     <ScrollView
         android:layout_width="0dp"
         android:layout_height="500dp"
-        app:layout_constraintWidth_default="percent"
-        app:layout_constraintWidth_percent="0.8"
-        app:layout_constraintHeight_default="wrap"
-        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@+id/btnBack"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintVertical_bias="0.5"
-        app:layout_constraintHorizontal_bias="0.5">
+        app:layout_constraintHeight_default="wrap"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0"
+        app:layout_constraintWidth_default="percent"
+        app:layout_constraintWidth_percent="0.8">
 
         <TextView
             android:id="@+id/nearbyGroceryView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="22sp"
+            android:gravity="center"
             android:text="Search Results Here..."
             android:textColor="@color/black"
-            android:gravity="center" />
+            android:textSize="22sp" />
     </ScrollView>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
