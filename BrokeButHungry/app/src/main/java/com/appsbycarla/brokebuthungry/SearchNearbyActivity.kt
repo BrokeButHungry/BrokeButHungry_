@@ -3,6 +3,7 @@
 package com.appsbycarla.brokebuthungry
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
@@ -37,6 +38,8 @@ class SearchNearbyActivity : AppCompatActivity() {
     lateinit var placesClient: PlacesClient
     lateinit var fusedLocationClient: FusedLocationProviderClient
 
+    var returnJSON = ""
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.search_nearby)
@@ -53,6 +56,12 @@ class SearchNearbyActivity : AppCompatActivity() {
         val backButton: Button = findViewById(R.id.btnBack)
         backButton.setOnClickListener {
             finish()
+        }
+        val mapButton: Button = findViewById(R.id.btnMap)
+        mapButton.setOnClickListener {
+            val intent = Intent(this, MapsActivity::class.java)
+            intent.putExtra("JSON", returnJSON)
+            startActivity(intent)
         }
 
         // Check if the app has location permission
@@ -120,6 +129,7 @@ class SearchNearbyActivity : AppCompatActivity() {
                         val inputStream: InputStream = BufferedInputStream(connection.inputStream)
                         val response = inputStream.bufferedReader().use { it.readText() }  // defaults to UTF-8
                         connection.disconnect()
+                        returnJSON = response
 
                         Log.d("PlacesAPI", "Response: $response")
 
