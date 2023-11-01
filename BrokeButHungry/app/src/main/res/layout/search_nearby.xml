@@ -29,17 +29,17 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />-->
 
-        <Button
-            android:id="@+id/btnBack"
-            android:layout_width="103dp"
-            android:layout_height="63dp"
-            android:text="Go back"
-            android:textColor="@color/white"
-            android:backgroundTint="#930019"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintVertical_bias="0.953" />
+    <Button
+        android:id="@+id/btnBack"
+        android:layout_width="103dp"
+        android:layout_height="63dp"
+        android:backgroundTint="#930019"
+        android:text="Go back"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.133"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <ScrollView
         android:layout_width="0dp"
@@ -62,5 +62,18 @@
             android:textColor="@color/black"
             android:textSize="22sp" />
     </ScrollView>
+
+    <Button
+        android:id="@+id/btnMap"
+        android:layout_width="93dp"
+        android:layout_height="61dp"
+        android:backgroundTint="#930019"
+        android:text="Map"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.871"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
