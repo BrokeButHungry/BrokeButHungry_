@@ -27,6 +27,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.text.HtmlCompat
 import org.json.JSONObject
 import java.io.BufferedReader
@@ -51,6 +52,10 @@ class    MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Setting splash screen to be viewed before going to main page
+        Thread.sleep(1500)
+        installSplashScreen()
 
         // Set the content view to the activity's layout defined in activity_main.xml
         setContentView(R.layout.activity_main)

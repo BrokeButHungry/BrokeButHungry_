@@ -104,7 +104,7 @@ class SearchNearbyActivity : AppCompatActivity() {
                 val longitude = it.longitude
                 val radius = 10000 // Define the radius in which you want to search places
 
-                val apiKey = "AIzaSyCZR0gVZBwoIod0xP9P_0TWI4PUb4Wfr9A" // Replace with your actual API key
+                val apiKey = "AIzaSyCZR0gVZBwoIod0xP9P_0TWI4PUb4Wfr9A" 
                 val urlString = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?" +
                         "location=$latitude,$longitude" +
                         "&radius=$radius" +
@@ -118,7 +118,7 @@ class SearchNearbyActivity : AppCompatActivity() {
                         val connection: HttpURLConnection = url.openConnection() as HttpURLConnection
                         connection.requestMethod = "GET"
                         val inputStream: InputStream = BufferedInputStream(connection.inputStream)
-                        val response = inputStream.bufferedReader().use { it.readText() }  // defaults to UTF-8
+                        val response = inputStream.bufferedReader().use { it.readText() }
                         connection.disconnect()
 
                         Log.d("PlacesAPI", "Response: $response")
@@ -162,11 +162,6 @@ class SearchNearbyActivity : AppCompatActivity() {
                 // Permission denied
             }
         }
-    }
-
-    // This function will contain your logic to find places
-    private fun findPlaces() {
-        // Your existing logic to find places
     }
 
     companion object {
