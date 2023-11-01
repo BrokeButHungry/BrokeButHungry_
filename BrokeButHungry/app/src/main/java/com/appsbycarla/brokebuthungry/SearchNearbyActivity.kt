@@ -3,8 +3,10 @@
 package com.appsbycarla.brokebuthungry
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
@@ -54,6 +56,14 @@ class SearchNearbyActivity : AppCompatActivity() {
         backButton.setOnClickListener {
             finish()
         }
+        val mapButton: Button = findViewById(R.id.btnMap)
+        mapButton.setOnClickListener {
+            val gmmIntentUri = Uri.parse("geo:0,0?q=supermarket")
+            val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
+            mapIntent.setPackage("com.google.android.apps.maps")
+            startActivity(mapIntent)
+        }
+
 
         // Check if the app has location permission
         if (ActivityCompat.checkSelfPermission(
@@ -100,8 +110,8 @@ class SearchNearbyActivity : AppCompatActivity() {
         }
         fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
             location?.let {
-                val latitude = it.latitude
-                val longitude = it.longitude
+                val latitude = 34.827 //it.latitude
+                val longitude = -107.383//it.longitude
                 val radius = 10000 // Define the radius in which you want to search places
 
                 val apiKey = "AIzaSyCZR0gVZBwoIod0xP9P_0TWI4PUb4Wfr9A" 
