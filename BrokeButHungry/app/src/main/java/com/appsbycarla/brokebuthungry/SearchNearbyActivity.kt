@@ -58,7 +58,7 @@ class SearchNearbyActivity : AppCompatActivity() {
         }
         val openGMaps: Button = findViewById(R.id.btnMap)
         openGMaps.setOnClickListener {
-            val gmmIntentUri = Uri.parse("geo:0,0")
+            val gmmIntentUri = Uri.parse("geo:0,0?q=supermarket")
             val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
             mapIntent.setPackage("com.google.android.apps.maps")
             startActivity(mapIntent)
