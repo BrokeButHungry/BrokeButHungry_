@@ -56,6 +56,11 @@ class SearchNearbyActivity : AppCompatActivity() {
         backButton.setOnClickListener {
             finish()
         }
+        /**
+         * links to google maps with a seach request for supermarkets in the local area
+         * uses the bnt map on the xml side
+         * Author: James Cowman
+         */
         val openGMaps: Button = findViewById(R.id.btnMap)
         openGMaps.setOnClickListener {
             val gmmIntentUri = Uri.parse("geo:0,0?q=supermarket")
