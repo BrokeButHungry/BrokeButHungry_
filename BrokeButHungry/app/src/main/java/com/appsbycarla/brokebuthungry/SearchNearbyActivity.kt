@@ -3,8 +3,10 @@
 package com.appsbycarla.brokebuthungry
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
@@ -53,6 +55,13 @@ class SearchNearbyActivity : AppCompatActivity() {
         val backButton: Button = findViewById(R.id.btnBack)
         backButton.setOnClickListener {
             finish()
+        }
+        val openGMaps: Button = findViewById(R.id.btnMap)
+        openGMaps.setOnClickListener {
+            val gmmIntentUri = Uri.parse("geo:0,0")
+            val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
+            mapIntent.setPackage("com.google.android.apps.maps")
+            startActivity(mapIntent)
         }
 
         // Check if the app has location permission
