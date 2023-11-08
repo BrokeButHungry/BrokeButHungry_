@@ -22,12 +22,9 @@ import android.os.AsyncTask
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
-import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.core.text.HtmlCompat
 import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -36,8 +33,7 @@ import java.net.URL
 import org.json.JSONArray
 import kotlinx.coroutines.*
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
+
 
 
 class    MainActivity : AppCompatActivity() {
@@ -45,9 +41,8 @@ class    MainActivity : AppCompatActivity() {
     private lateinit var searchEditText: EditText
     private lateinit var searchButton: Button
     private lateinit var recipeNameTextView: TextView
-    private lateinit var recipeImageView: ImageView
-    private lateinit var recipesLayout: LinearLayout
-    data class Recipe(val id: String, val title: String?, val imageUrl: String?)
+    private lateinit var caloriesTextView: TextView
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,10 +53,9 @@ class    MainActivity : AppCompatActivity() {
         // Initialize references to UI elements using their IDs
         searchEditText = findViewById(R.id.searchEditText)
         searchButton = findViewById(R.id.searchButton)
-//        recipeNameTextView = findViewById(R.id.recipeNameTextView)
-//        recipeImageView = findViewById(R.id.recipeImageView)
-        recipesLayout = findViewById(R.id.recipesLayout)
+        recipeNameTextView = findViewById(R.id.recipeNameTextView)
 
+        // NEW Search Nearby Groceries Button
         val searchNearbyButton: Button = findViewById(R.id.btnSearchNearby)
         searchNearbyButton.setOnClickListener {
             val intent = Intent(this, SearchNearbyActivity::class.java)
@@ -76,60 +70,21 @@ class    MainActivity : AppCompatActivity() {
             // Check if the query is not empty
             if (query.isNotEmpty()) {
                 // Clear previous results
-//                recipeNameTextView.text = "Searching..."
+                recipeNameTextView.text = "Searching..."
 
                 searchRecipeWithCoroutine(query)
             }
         }
     }
 
-    /**
-     * Searches for recipes using coroutines and updates the UI with the results.
-     * Author: Carla Hernandez
-     * @param query The query string to search for.
-     */
-    private fun searchRecipeWithCoroutine(query: String) {
-        lifecycleScope.launch {
-            try {
-                // Fetch the recipes for the given query.
-                val recipes = withContext(Dispatchers.IO) { searchRecipe(query) }
-
-                withContext(Dispatchers.Main) {
-                    recipesLayout.removeAllViews() // Clear previous results
-                    if (recipes != null) {
-                        for (recipe in recipes) {
-                            addRecipeToLayout(recipe)
-                        }
-                    } else {
-                        val noResultTextView = TextView(this@MainActivity)
-                        noResultTextView.text = "No matching recipes found."
-                        recipesLayout.addView(noResultTextView)
-                    }
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                val errorTextView = TextView(this@MainActivity)
-                errorTextView.text = "Error occurred: ${e.message}"
-                recipesLayout.addView(errorTextView)
-            }
-        }
-    }
-
-    /**
-     * Searches for recipes matching the given query and returns their IDs.
-     * Author: Carla Hernandez
-     * @param query The query string to search for.
-     * @return A list of recipe IDs matching the query or null if no results.
-     */
-    private fun searchRecipe(query: String): List<Recipe>? {
-        val apiKey = "b3d0fd73ebb946ca9d282a96c16e4b31" //"fa02fa2847654f40adab114f3f574335"
+    private fun searchRecipe(query: String): String? {
+        val apiKey = "b3d0fd73ebb946ca9d282a96c16e4b31" // replace with your Spoonacular API key
         val apiUrl = "https://api.spoonacular.com/recipes/complexSearch?query=$query&apiKey=$apiKey"
 
         val url = URL(apiUrl)
         val connection = url.openConnection() as HttpURLConnection
         connection.requestMethod = "GET"
 
-        // Check if the connection is successful.
         if (connection.responseCode == HttpURLConnection.HTTP_OK) {
             val reader = BufferedReader(InputStreamReader(connection.inputStream))
             val response = reader.readText()
@@ -137,92 +92,191 @@ class    MainActivity : AppCompatActivity() {
 
             val jsonResponse = JSONObject(response)
             val results = jsonResponse.getJSONArray("results")
-            val recipes = mutableListOf<Recipe>()
 
-            // Extracting recipe information from the results.
-            for (i in 0 until results.length()) {
-                val recipeJson = results.getJSONObject(i)
-                val id = recipeJson.getString("id")
-                val title = "<br><h2 style=\"color:red;\">${recipeJson.getString("title")}</h2>"
-                val imageUrl = recipeJson.getString("image")
-                recipes.add(Recipe(id, title, imageUrl))
+            // Assuming you want the ID of the first recipe in the search results
+            if (results.length() > 0) {
+                val firstResult = results.getJSONObject(0)
+                return firstResult.getString("id")
             }
-
-            return if (recipes.isNotEmpty()) recipes else null
         }
         return null
     }
 
-//    private fun searchFirstRecipeId(query: String): String? {
-//        val apiKey = "fa02fa2847654f40adab114f3f574335"
-//        val apiUrl = "https://api.spoonacular.com/recipes/complexSearch?query=$query&apiKey=$apiKey"
-//
-//        val url = URL(apiUrl)
-//        val connection = url.openConnection() as HttpURLConnection
-//        connection.requestMethod = "GET"
-//
-//        // Check if the connection is successful.
-//        if (connection.responseCode == HttpURLConnection.HTTP_OK) {
-//            val reader = BufferedReader(InputStreamReader(connection.inputStream))
-//            val response = reader.readText()
-//            reader.close()
-//
-//            val jsonResponse = JSONObject(response)
-//            val results = jsonResponse.getJSONArray("results")
-//
-//            // Return the first recipe's ID or null if there are no results.
-//            if (results.length() > 0) {
-//                return results.getJSONObject(0).getString("id")
-//            }
-//        }
-//
-//        return null
-//    }
-
-    /**
-     * Adds a recipe to the recipesLayout LinearLayout.
-     * This includes setting up a TextView for the recipe title and an ImageView for the recipe image.
-     * Both views are clickable and lead to a detailed view of the recipe.
-     *
-     * Author: Carla Hernandez
-     * @param recipe The recipe object containing the title, image URL, and ID.
-     */
-    private fun addRecipeToLayout(recipe: Recipe) {
-        // Create a TextView for the recipe title
-        val titleTextView = TextView(this)
-
-        titleTextView.text = HtmlCompat.fromHtml(recipe.title ?: "", HtmlCompat.FROM_HTML_MODE_LEGACY)
-        titleTextView.setTextColor(ContextCompat.getColor(this, android.R.color.holo_red_dark))
-        titleTextView.setOnClickListener {
-            openRecipeDetailActivity(recipe.id)
+    private fun searchRecipeWithCoroutine(query: String) {
+        lifecycleScope.launch {
+            try {
+                val recipeId = withContext(Dispatchers.IO) { searchRecipe(query) }
+                if (recipeId != null) {
+                    val recipeInfo = withContext(Dispatchers.IO) { getRecipeInformation(recipeId) }
+                    // Switching to Main thread to update UI
+                    withContext(Dispatchers.Main) {
+                        recipeNameTextView.text = recipeInfo
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                // Optionally handle errors, maybe update the UI to reflect the error state.
+                withContext(Dispatchers.Main) {
+                    recipeNameTextView.text = "Error occurred: ${e.message}"
+                }
+            }
         }
-
-        titleTextView.textSize = 16f
-        titleTextView.setPadding(0, 16, 0, 8)
-        recipesLayout.addView(titleTextView)
-
-        val recipeImage = ImageView(this)
-        if (recipe.imageUrl != null) {
-            Glide.with(this).load(recipe.imageUrl).into(recipeImage)
-        }
-        recipeImage.setOnClickListener {
-            openRecipeDetailActivity(recipe.id)
-        }
-
-        recipesLayout.addView(recipeImage)
     }
 
-    /**
-     * Opens the RecipeDetailActivity to display details of a selected recipe.
-     * The recipe ID is passed as an extra to the RecipeDetailActivity to fetch and display the corresponding recipe details.
-     *
-     * Author: Carla Hernandez
-     * @param recipeId The unique identifier of the recipe to be displayed in the RecipeDetailActivity.
-     */
-    private fun openRecipeDetailActivity(recipeId: String) {
-        val intent = Intent(this, RecipeDetailActivity::class.java)
-        intent.putExtra("RECIPE_ID", recipeId)
-        startActivity(intent)
+    private fun getRecipeInformation(recipeId: String): String {
+        val apiKey = "b3d0fd73ebb946ca9d282a96c16e4b31" // replace with your Spoonacular API key
+        val apiUrl = "https://api.spoonacular.com/recipes/$recipeId/information?apiKey=$apiKey"
+
+        try {
+            val url = URL(apiUrl)
+            val connection = url.openConnection() as HttpURLConnection
+            connection.requestMethod = "GET"
+
+            if (connection.responseCode == HttpURLConnection.HTTP_OK) {
+                val reader = BufferedReader(InputStreamReader(connection.inputStream))
+                val response = reader.readText()
+                reader.close()
+
+                val jsonResponse = JSONObject(response)
+
+                val ingredientsArray = jsonResponse.getJSONArray("extendedIngredients")
+                val instructions = jsonResponse.getString("instructions")
+
+                val sb = StringBuilder()
+
+                for (i in 0 until ingredientsArray.length()) {
+                    val ingredient = ingredientsArray.getJSONObject(i)
+                    val ingredientInfo = ingredient.getString("original")
+                    sb.append(ingredientInfo).append("\n")
+                }
+
+                sb.append("\nInstructions:\n").append(instructions)
+
+                return sb.toString()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return "Error retrieving recipe information."
+    }
+
+    private fun getRecipeInformationWithCoroutine(recipeId: String) {
+        lifecycleScope.launch {
+            try {
+                val recipeInfo = withContext(Dispatchers.IO) { getRecipeInformation(recipeId) }
+                // If you need to update UI with recipeInfo, do it here.
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+
+    inner class FetchRecipesTask : AsyncTask<String, Void, String>() {
+
+        // This method is executed in the background thread.
+        override fun doInBackground(vararg params: String?): String {
+            // Extract the query from the task parameters.
+            val query = params[0]
+
+            // API credentials (app ID and app key) for accessing the Edamam API.
+            val apiId = "456948c8"
+            val apiKey = "da192cac6c51d23c7025297c6c6f78b4"
+
+            // Construct the URL for the API request using the query and credentials.
+            val apiUrl = "https://api.edamam.com/search?q=$query&app_id=$apiId&app_key=$apiKey"
+
+            try {
+                // Create a URL object from the constructed URL string.
+                val url = URL(apiUrl)
+
+                // Open a connection to the URL as an HttpURLConnection.
+                val connection = url.openConnection() as HttpURLConnection
+
+                // Set the request method to "GET."
+                connection.requestMethod = "GET"
+
+                // Get the HTTP response code from the server.
+                val responseCode = connection.responseCode
+
+                // Check if the response code indicates a successful response (HTTP OK).
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    // Read the response data from the input stream.
+                    val reader = BufferedReader(InputStreamReader(connection.inputStream))
+                    val response = StringBuilder()
+                    var line: String?
+
+                    // Read each line of the response and append it to the StringBuilder.
+                    while (reader.readLine().also { line = it } != null) {
+                        response.append(line)
+                    }
+                    // Close the reader.
+                    reader.close()
+
+                    // Return the response data as a string.
+                    return response.toString()
+                }
+            } catch (e: Exception) {
+                // Handle exceptions, such as network errors or invalid URLs.
+                e.printStackTrace()
+            }
+            // If there was an error or no data was received, return an empty string.
+            return ""
+        }
+
+        // This method is executed on the main UI thread after doInBackground completes.
+        override fun onPostExecute(result: String) {
+            if (result.isNotEmpty()) {
+                // If the result is not empty, call the displayResults method to show the data.
+                displayResults(result)
+            } else {
+                // If there are no results, display a message in the resultsTextView.
+                recipeNameTextView.text = "No results found."
+            }
+        }
+    }
+
+    private fun displayResults(jsonResult: String) {
+        // Locate the TextView elements in your activity
+        val recipeNameTextView = findViewById<TextView>(R.id.recipeNameTextView)
+
+        try {
+            // Parse the incoming JSON string into a JSONObject
+            val jsonObject = JSONObject(jsonResult)
+
+            // Get the "hits" array from the JSONObject
+            val hitsArray = jsonObject.getJSONArray("hits")
+
+            // Create a StringBuilder to store all recipe names and calories
+            val recipeInfo = StringBuilder()
+
+            // Loop through each item in the "hits" array
+            for (i in 0 until hitsArray.length()) {
+                // Get the "recipe" object for the current item
+                val recipeObject = hitsArray.getJSONObject(i).getJSONObject("recipe")
+
+                // Extract relevant data from the "recipe" object
+                val recipeLabel = recipeObject.getString("label")
+                val recipeCalories = recipeObject.getDouble("calories")
+
+                // Append the recipe name and calories to the recipeInfo StringBuilder
+                recipeInfo.append("$recipeLabel\nCalories: $recipeCalories\n\n")
+            }
+
+            // Set the combined recipe names and calories in the recipeNameTextView
+            recipeNameTextView.text = recipeInfo.toString()
+
+            // Set the text color to white
+            recipeNameTextView.setTextColor(ContextCompat.getColor(this, android.R.color.white))
+
+            // Adjust the text size for recipe name (if needed)
+            recipeNameTextView.textSize = resources.getDimension(R.dimen.recipe_label_text_size)
+        } catch (e: Exception) {
+            // Handle exceptions, such as JSON parsing errors
+            e.printStackTrace()
+            // Display an error message in the TextView if an exception occurs
+            recipeNameTextView.text = "Error parsing JSON."
+        }
     }
 }
 
