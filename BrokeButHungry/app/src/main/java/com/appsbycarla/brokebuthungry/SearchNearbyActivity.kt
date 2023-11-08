@@ -3,8 +3,10 @@
 package com.appsbycarla.brokebuthungry
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
@@ -54,6 +56,18 @@ class SearchNearbyActivity : AppCompatActivity() {
         backButton.setOnClickListener {
             finish()
         }
+        /**
+         * links to google maps with a seach request for supermarkets in the local area
+         * uses the bnt map on the xml side
+         * Author: James Cowman
+         */
+        val openGMaps: Button = findViewById(R.id.btnMap)
+        openGMaps.setOnClickListener {
+            val gmmIntentUri = Uri.parse("geo:0,0?q=supermarket")
+            val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
+            mapIntent.setPackage("com.google.android.apps.maps")
+            startActivity(mapIntent)
+        }
 
         // Check if the app has location permission
         if (ActivityCompat.checkSelfPermission(
@@ -75,6 +89,11 @@ class SearchNearbyActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Fetches and displays nearby grocery or supermarket locations based on the user's current location.
+     * Uses Google Places API to retrieve the nearby places information...
+     * Author: Carla Hernandez
+     */
     private fun findNearbyPlaces() {
         if (ActivityCompat.checkSelfPermission(
                 this,
@@ -145,88 +164,6 @@ class SearchNearbyActivity : AppCompatActivity() {
             Log.e("LocationError", "Error getting location: $exception")
         }
     }
-
-
-//    private fun findNearbyPlaces(query: String) {
-//        fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
-//            location?.let {
-//                val userLatitude = location.latitude
-//                val userLongitude = location.longitude
-//                val lowerLeftLatitude = userLatitude - 0.01 // Example offset
-//                val lowerLeftLongitude = userLongitude - 0.01 // Example offset
-//                val upperRightLatitude = userLatitude + 0.01 // Example offset
-//                val upperRightLongitude = userLongitude + 0.01 // Example offset
-//
-//                Log.d("Location", "Latitude: $userLatitude, Longitude: $userLongitude")
-//
-//                val bounds = RectangularBounds.newInstance(
-//                    LatLng(lowerLeftLatitude, lowerLeftLongitude),
-//                    LatLng(upperRightLatitude, upperRightLongitude)
-//                )
-//
-//                val placeFields: List<Place.Field> = listOf(Place.Field.NAME, Place.Field.ADDRESS, Place.Field.TYPES)
-//
-//                val placeTypes: MutableList<String> = mutableListOf(
-//                    Place.Type.GROCERY_OR_SUPERMARKET.name,
-//                    Place.Type.SUPERMARKET.name
-//                )
-//
-//                val request: FindAutocompletePredictionsRequest =
-//                    FindAutocompletePredictionsRequest.builder()
-//                        .setLocationBias(bounds)
-//                        //.setTypesFilter(placeTypes)
-//                        .setQuery(query)
-//                        .build()
-//
-//                Log.d("PlacesAPI", "Request: $request")
-//
-//                if (ActivityCompat.checkSelfPermission(
-//                        this,
-//                        Manifest.permission.ACCESS_FINE_LOCATION
-//                    ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-//                        this,
-//                        Manifest.permission.ACCESS_COARSE_LOCATION
-//                    ) != PackageManager.PERMISSION_GRANTED
-//                ) {
-//                    ActivityCompat.requestPermissions(
-//                        this,
-//                        arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-//                        LOCATION_PERMISSION_REQUEST_CODE
-//                    )
-//                    return@addOnSuccessListener
-//                }
-//
-//                placesClient.findAutocompletePredictions(request).addOnSuccessListener { response ->
-//                    val resultsTextView: TextView = findViewById(R.id.nearbyGroceryView)
-//                    val stringBuilder = StringBuilder()
-//                    for (prediction in response.autocompletePredictions) {
-//                        placesClient.fetchPlace(FetchPlaceRequest.newInstance(prediction.placeId, placeFields))
-//                            .addOnSuccessListener { fetchPlaceResponse ->
-//                                val place = fetchPlaceResponse.place
-//                                val types = place.types
-//                                if (types != null && types.contains(Place.Type.GROCERY_OR_SUPERMARKET)) {
-//                                    stringBuilder.append("${place.name}, ${place.address}\n")
-//                                    resultsTextView.text = stringBuilder.toString()
-//                                }
-//                                Log.d("PlacesAPI", "Place Types: $types")
-//                            }.addOnFailureListener { exception ->
-//                                if (exception is ApiException) {
-//                                    Log.e("PlacesAPI", "Place not found: ${exception.statusCode}")
-//                                }
-//                            }
-//                    }
-//                }.addOnFailureListener { exception ->
-//                    Log.e("PlacesAPI", "Error finding places: $exception")
-//                }
-//            } ?: run {
-//                Log.e("LocationError", "Location is null")
-//                // Handle the case where location is null
-//            }
-//        }.addOnFailureListener { exception ->
-//            Log.e("LocationError", "Error getting location: $exception")
-//        }
-//    }
-
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
