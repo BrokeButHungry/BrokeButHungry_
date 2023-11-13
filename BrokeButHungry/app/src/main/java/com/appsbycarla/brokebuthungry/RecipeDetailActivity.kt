@@ -135,23 +135,34 @@ class RecipeDetailActivity : AppCompatActivity() {
 
             val recipeTitle = "<br><b>${jsonResponse.getString("title")}</b><br><br>"
             val ingredientsArray = jsonResponse.getJSONArray("extendedIngredients")
-            val instructions = jsonResponse.getString("instructions")
+            val instructions = jsonResponse.getJSONArray("analyzedInstructions")
+            val analyzedInstructions = instructions.getJSONObject(0)
+            val analyzedInstructionSteps = analyzedInstructions.getJSONArray("steps")
             val recipeImage = jsonResponse.getString("image")
             val totalIngredients = ingredientsArray.length() // Added
 
             val sb = StringBuilder()
             sb.append("<br><b>$recipeTitle</b><br><br>") // Added
-            sb.append("<b>Total Number of Ingredients:</b> $totalIngredients<br>") // Added
+
+            sb.append("<b>Total Number of Ingredients:</b> $totalIngredients<br><br>") // Added
+
             sb.append("<b>Ingredients:</b><br>")
 
             for (i in 0 until ingredientsArray.length()) {
                 val ingredient = ingredientsArray.getJSONObject(i)
                 val ingredientInfo = ingredient.getString("original")
-                sb.append(ingredientInfo).append("<br>")
+                sb.append(ingredientInfo).append("<br><br>")
             }
 
-            sb.append("<br><b>Instructions:</b><br><br>")
-                .append(instructions.replace("\n", "<br>"))
+            sb.append("<br><b>Numbered Instructions: </b><br>")
+
+            for (i in 0 until analyzedInstructionSteps.length()) {
+                val analyzedInstructions = analyzedInstructionSteps.getJSONObject(i)
+                val instructionNumber = analyzedInstructions.getInt("number")
+                val instructionStep = analyzedInstructions.getString("step")
+                sb.append(instructionNumber).append(". ")
+                    .append(instructionStep).append("<br><br>")
+            }
 
             return Triple(recipeTitle, recipeImage, sb.toString())
         } else {
