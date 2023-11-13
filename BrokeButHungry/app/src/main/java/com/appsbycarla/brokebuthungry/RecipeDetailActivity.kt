@@ -143,7 +143,9 @@ class RecipeDetailActivity : AppCompatActivity() {
 
             val sb = StringBuilder()
             sb.append("<br><b>$recipeTitle</b><br><br>") // Added
+
             sb.append("<b>Total Number of Ingredients:</b> $totalIngredients<br><br>") // Added
+
             sb.append("<b>Ingredients:</b><br>")
 
             for (i in 0 until ingredientsArray.length()) {
