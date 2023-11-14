@@ -1,55 +1,123 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mainRelativeLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/colored_main_background">
+    android:orientation="vertical"
+    android:background="@drawable/colored_main_background"
+    android:gravity="center_horizontal"
+    tools:context=".MainActivity">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:spacing="10dp">
+        android:layout_height="match_parent"
+        android:background="@drawable/colored_main_background"
+        android:layout_marginBottom="16dp">>
 
-        <ImageView
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="150dp"
-            android:background="@drawable/recipe_details_banner" />
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:spacing="10dp">
 
-        <TextView
-            android:id="@+id/recipeTitleTextView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="26sp"
-            android:textColor="#000000"
-            android:textStyle="bold"
-            android:gravity="center"
-            android:layout_marginHorizontal="12dp"
-            android:layout_marginVertical="12dp" />
+            <ImageView
+                android:id="@+id/recipeDetailsBanner"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:background="@drawable/recipe_details_banner" />
 
-        <ImageView
-            android:id="@+id/recipeImageView"
-            android:layout_width="match_parent"
-            android:layout_height="250dp"
-            android:scaleType="centerCrop"
-            android:layout_gravity="center"
-            android:layout_marginHorizontal="12dp"
-            android:paddingTop="12dp"/>
+            <TextView
+                android:id="@+id/recipeTitleTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="26sp"
+                android:textColor="#000000"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:layout_marginHorizontal="12dp"
+                android:layout_marginVertical="12dp"
+                android:layout_below="@id/recipeDetailsBanner"/>
 
-        <TextView
-            android:id="@+id/recipeDetailsTextView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="20sp"
-            android:textColor="#000000"
-            android:layout_marginHorizontal="12dp"
-            android:layout_marginVertical="12dp"
-            android:paddingTop="12dp"/>
+            <ImageView
+                android:id="@+id/recipeImageView"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                android:layout_gravity="center"
+                android:layout_marginHorizontal="12dp"
+                android:layout_below="@id/recipeTitleTextView"
+                android:paddingTop="12dp"
+                android:scaleType="centerCrop" />
 
-        <WebView
-            android:id="@+id/nutritionLabelWebView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            <TextView
+                android:id="@+id/totalIngredientString"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/recipeImageView"
+                android:layout_marginHorizontal="12dp"
+                android:layout_marginVertical="12dp"
+                android:layout_marginTop="1dp"
+                android:paddingTop="12dp"
+                android:textColor="#000000"
+                android:textSize="20sp" />
 
-    </LinearLayout>
-</ScrollView>
+            <TextView
+                android:id="@+id/ingredientTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:textColor="#000000"
+                android:layout_marginHorizontal="12dp"
+                android:layout_marginVertical="12dp"
+                android:layout_below="@id/totalIngredientString"
+                android:paddingTop="12dp"
+                android:text="Ingredients"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:id="@+id/ingredientListTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:textColor="#000000"
+                android:layout_marginHorizontal="12dp"
+                android:layout_marginVertical="12dp"
+                android:layout_below="@id/ingredientTitle"
+                android:paddingTop="12dp"/>
+
+            <TextView
+                android:id="@+id/instructionTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:textColor="#000000"
+                android:layout_marginHorizontal="12dp"
+                android:layout_marginVertical="12dp"
+                android:layout_below="@id/ingredientListTextView"
+                android:paddingTop="12dp"
+                android:text="Instructions"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:id="@+id/instructionListTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:textColor="#000000"
+                android:layout_marginHorizontal="12dp"
+                android:layout_marginVertical="12dp"
+                android:layout_below="@id/instructionTitle"
+                android:paddingTop="12dp"/>
+
+            <WebView
+                android:id="@+id/nutritionLabelWebView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/instructionListTextView"/>
+
+        </RelativeLayout>
+    </ScrollView>
+</RelativeLayout>
