@@ -56,7 +56,7 @@ class SearchNearbyActivity : AppCompatActivity() {
         backButton.setOnClickListener {
             finish()
         }
-        val mapButton: Button = findViewById(R.id.btnMap)
+       val mapButton: Button = findViewById(R.id.btnMap)
         mapButton.setOnClickListener {
             val gmmIntentUri = Uri.parse("geo:0,0?q=supermarket")
             val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)

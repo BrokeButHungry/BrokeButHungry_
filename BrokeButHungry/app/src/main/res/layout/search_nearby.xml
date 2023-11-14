@@ -63,4 +63,15 @@
             android:textSize="22sp" />
     </ScrollView>
 
+    <Button
+        android:id="@+id/btnMap"
+        android:layout_width="103dp"
+        android:layout_height="63dp"
+        android:backgroundTint="#930019"
+        android:text="Map"
+        app:layout_constraintBottom_toTopOf="@+id/btnBack"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintVertical_bias="0.542" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
