@@ -157,7 +157,6 @@ class    MainActivity : AppCompatActivity() {
                 //TODo
             }
             val recipesSorted = recipes.sortedBy{ it.ingredients}
-            // recipesSorted.dropLastWhile { it. < 6 }  // ask professor for help
 
             return if (recipesSorted.isNotEmpty()) recipesSorted else null
         }
