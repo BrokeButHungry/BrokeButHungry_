@@ -182,21 +182,21 @@ class    MainActivity : AppCompatActivity() {
             val results = jsonResponse.getJSONArray("results")
             val recipes = mutableListOf<Recipe>()
 
+
             // Extracting recipe information from the results.
             for (i in 0 until results.length()) {
                 val recipeJson = results.getJSONObject(i)
                 val id = recipeJson.getString("id")
                 val title = "<br><h2 style=\"color:red;\">${recipeJson.getString("title")}</h2>"
                 val imageUrl = recipeJson.getString("image")
-                val ingredientsArray = recipeJson.getJSONArray("extendedIngredients")
-                val ingredientsCount = ingredientsArray.length()
+                val ingredientsCount = fetchingredientsCount(id)
                 recipes.add(Recipe(id, title, imageUrl, ingredientsCount))
-                recipes.sortBy { ingredientsCount }
-                recipes.dropLastWhile { it > 5 } // ask professor for help
                 //TODo
             }
+            val recipesSorted = recipes.sortedBy{ it.ingredients}
+            // recipesSorted.dropLastWhile { it. < 6 }   ask professor for help
 
-            return if (recipes.isNotEmpty()) recipes else null
+            return if (recipesSorted.isNotEmpty()) recipesSorted else null
         }
         return null
     }
@@ -273,4 +273,28 @@ class    MainActivity : AppCompatActivity() {
         startActivity(intent)
     }
 }
+
+private fun fetchingredientsCount(recipeId: String): Int {
+    val apiKey = "b3d0fd73ebb946ca9d282a96c16e4b31" //"fa02fa2847654f40adab114f3f574335"
+    val apiUrl = "https://api.spoonacular.com/recipes/$recipeId/information?apiKey=$apiKey"
+
+    val url = URL(apiUrl)
+    val connection = url.openConnection() as HttpURLConnection
+    connection.requestMethod = "GET"
+
+    if (connection.responseCode == HttpURLConnection.HTTP_OK) {
+        val reader = BufferedReader(InputStreamReader(connection.inputStream))
+        val response = reader.readText()
+        reader.close()
+
+        val jsonResponse = JSONObject(response)
+
+        val ingredientsArray = jsonResponse.getJSONArray("extendedIngredients")
+
+        return ingredientsArray.length()
+    } else {
+        throw Exception("Failed to fetch recipe details. HTTP Code: ${connection.responseCode}")
+    }
+}
+
 
