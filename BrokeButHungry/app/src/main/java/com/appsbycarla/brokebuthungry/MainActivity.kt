@@ -48,7 +48,7 @@ class    MainActivity : AppCompatActivity() {
     private lateinit var recipeNameTextView: TextView
     private lateinit var recipeImageView: ImageView
     private lateinit var recipesLayout: LinearLayout
-    data class Recipe(val id: String, val title: String?, val imageUrl: String?)
+    data class Recipe(val id: String, val title: String?, val imageUrl: String?, val ingredients: Int?)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -125,7 +125,7 @@ class    MainActivity : AppCompatActivity() {
      * Author: Carla Hernandez
      * @param query The query string to search for.
      * @return A list of recipe IDs matching the query or null if no results.
-     */
+     *
     private fun searchRecipe(query: String): List<Recipe>? {
         val apiKey = "b3d0fd73ebb946ca9d282a96c16e4b31" //"fa02fa2847654f40adab114f3f574335"
         val apiUrl = "https://api.spoonacular.com/recipes/complexSearch?query=$query&apiKey=$apiKey"
@@ -151,6 +151,48 @@ class    MainActivity : AppCompatActivity() {
                 val title = "<br><h2 style=\"color:red;\">${recipeJson.getString("title")}</h2>"
                 val imageUrl = recipeJson.getString("image")
                 recipes.add(Recipe(id, title, imageUrl))
+            }
+
+            return if (recipes.isNotEmpty()) recipes else null
+        }
+        return null
+    }
+    */
+    /**
+     * Searches for recipes matching the given query and returns their IDs based on ingredent#
+     * Author: Carla Hernandez and James Cowman
+     * @param query The query string to search for.
+     * @return A list of recipe IDs matching the query or null if no results.
+     */
+    private fun searchRecipe(query: String): List<Recipe>? {
+        val apiKey = "b3d0fd73ebb946ca9d282a96c16e4b31" //"fa02fa2847654f40adab114f3f574335"
+        val apiUrl = "https://api.spoonacular.com/recipes/complexSearch?query=$query&apiKey=$apiKey"
+
+        val url = URL(apiUrl)
+        val connection = url.openConnection() as HttpURLConnection
+        connection.requestMethod = "GET"
+
+        // Check if the connection is successful.
+        if (connection.responseCode == HttpURLConnection.HTTP_OK) {
+            val reader = BufferedReader(InputStreamReader(connection.inputStream))
+            val response = reader.readText()
+            reader.close()
+
+            val jsonResponse = JSONObject(response)
+            val results = jsonResponse.getJSONArray("results")
+            val recipes = mutableListOf<Recipe>()
+
+            // Extracting recipe information from the results.
+            for (i in 0 until results.length()) {
+                val recipeJson = results.getJSONObject(i)
+                val id = recipeJson.getString("id")
+                val title = "<br><h2 style=\"color:red;\">${recipeJson.getString("title")}</h2>"
+                val imageUrl = recipeJson.getString("image")
+                val ingredientsArray = recipeJson.getJSONArray("extendedIngredients")
+                val ingredientsCount = ingredientsArray.length()
+                recipes.add(Recipe(id, title, imageUrl, ingredientsCount))
+                recipes.sortBy { ingredientsCount }
+                if(recipes.length)
             }
 
             return if (recipes.isNotEmpty()) recipes else null
