@@ -192,7 +192,8 @@ class    MainActivity : AppCompatActivity() {
                 val ingredientsCount = ingredientsArray.length()
                 recipes.add(Recipe(id, title, imageUrl, ingredientsCount))
                 recipes.sortBy { ingredientsCount }
-                if(recipes.length)
+                recipes.dropLastWhile { it > 5 } // ask professor for help
+                //TODo
             }
 
             return if (recipes.isNotEmpty()) recipes else null
