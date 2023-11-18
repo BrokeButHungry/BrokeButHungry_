@@ -235,7 +235,11 @@ class    MainActivity : AppCompatActivity() {
         startActivity(intent)
     }
 }
-
+/**
+ * Opens the spoonacular API to fetch an ingredients count of a selected recipe.
+ * Author: James Cowman
+ * @param recipeId The unique identifier of the recipe to be displayed in the RecipeDetailActivity.
+ */
 private fun fetchingredientsCount(recipeId: String): Int {
     val apiKey = "b3d0fd73ebb946ca9d282a96c16e4b31" //"fa02fa2847654f40adab114f3f574335"
     val apiUrl = "https://api.spoonacular.com/recipes/$recipeId/information?apiKey=$apiKey"
@@ -250,9 +254,7 @@ private fun fetchingredientsCount(recipeId: String): Int {
         reader.close()
 
         val jsonResponse = JSONObject(response)
-
         val ingredientsArray = jsonResponse.getJSONArray("extendedIngredients")
-
         return ingredientsArray.length()
     } else {
         throw Exception("Failed to fetch recipe details. HTTP Code: ${connection.responseCode}")
