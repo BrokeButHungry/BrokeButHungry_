@@ -18,6 +18,7 @@ Algorithm:
 //MainActivity.kt
 package com.appsbycarla.brokebuthungry
 import android.content.Intent // for search nearby
+import android.net.Uri
 import android.os.AsyncTask
 import android.os.Bundle
 import android.widget.Button
@@ -67,11 +68,18 @@ class    MainActivity : AppCompatActivity() {
 //        recipeImageView = findViewById(R.id.recipeImageView)
         recipesLayout = findViewById(R.id.recipesLayout)
 
-        val searchNearbyButton: Button = findViewById(R.id.btnSearchNearby)
+        /*val searchNearbyButton: Button = findViewById(R.id.btnSearchNearby)
         searchNearbyButton.setOnClickListener {
             val intent = Intent(this, SearchNearbyActivity::class.java)
             intent.putExtra("query", "supermarket")
             startActivity(intent)
+        }*/
+        val mapButton: Button = findViewById(R.id.btnSearchNearby)
+        mapButton.setOnClickListener {
+            val gmmIntentUri = Uri.parse("geo:0,0?q=supermarket")
+            val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
+            mapIntent.setPackage("com.google.android.apps.maps")
+            startActivity(mapIntent)
         }
 
         // Set a click listener for the searchButton
@@ -163,31 +171,6 @@ class    MainActivity : AppCompatActivity() {
         return null
     }
 
-//    private fun searchFirstRecipeId(query: String): String? {
-//        val apiKey = "fa02fa2847654f40adab114f3f574335"
-//        val apiUrl = "https://api.spoonacular.com/recipes/complexSearch?query=$query&apiKey=$apiKey"
-//
-//        val url = URL(apiUrl)
-//        val connection = url.openConnection() as HttpURLConnection
-//        connection.requestMethod = "GET"
-//
-//        // Check if the connection is successful.
-//        if (connection.responseCode == HttpURLConnection.HTTP_OK) {
-//            val reader = BufferedReader(InputStreamReader(connection.inputStream))
-//            val response = reader.readText()
-//            reader.close()
-//
-//            val jsonResponse = JSONObject(response)
-//            val results = jsonResponse.getJSONArray("results")
-//
-//            // Return the first recipe's ID or null if there are no results.
-//            if (results.length() > 0) {
-//                return results.getJSONObject(0).getString("id")
-//            }
-//        }
-//
-//        return null
-//    }
 
     /**
      * Adds a recipe to the recipesLayout LinearLayout.
