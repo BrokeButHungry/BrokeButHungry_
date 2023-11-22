@@ -18,6 +18,7 @@ import android.webkit.WebView
 import android.widget.CheckBox
 import android.widget.LinearLayout
 import org.w3c.dom.Text
+import android.graphics.Color
 
 
 class RecipeDetailActivity : AppCompatActivity() {
@@ -64,6 +65,7 @@ class RecipeDetailActivity : AppCompatActivity() {
 
                     for(individualIngredient in ingredientListArray) {
                         val ingredientBox = CheckBox(this@RecipeDetailActivity)
+                        ingredientBox.setTextColor(Color.BLACK)
                         ingredientBox.text = individualIngredient
                         ingredientLinearLayout.addView(ingredientBox)
                     }
