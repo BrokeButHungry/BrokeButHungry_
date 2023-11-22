@@ -50,6 +50,7 @@ class RecipeDetailActivity : AppCompatActivity() {
                 val (recipeTitle, recipeImage, totalIngredientString, instructionList, ingredientList) = fetchData(recipeId)
 
                 val ingredientListArray = ingredientList as ArrayList<String>
+                val instructionListArray = instructionList as ArrayList<String>
 
                 // Switch to the main thread to update the UI
                 withContext(Dispatchers.Main) {
@@ -59,7 +60,7 @@ class RecipeDetailActivity : AppCompatActivity() {
                     // using Glide to load images
                     Glide.with(this@RecipeDetailActivity).load(recipeImage).into(findViewById<ImageView>(R.id.recipeImageView))
 
-                    val ingredientLinearLayout = findViewById<LinearLayout>(R.id.ingredientListTextView)
+                    val ingredientLinearLayout = findViewById<LinearLayout>(R.id.ingredientListLinearLayout)
 
                     for(individualIngredient in ingredientListArray) {
                         val ingredientBox = CheckBox(this@RecipeDetailActivity)
@@ -70,8 +71,13 @@ class RecipeDetailActivity : AppCompatActivity() {
                     findViewById<TextView>(R.id.totalIngredientString).text =
                         HtmlCompat.fromHtml((totalIngredientString ?: "Total number of ingredients not available.").toString(), HtmlCompat.FROM_HTML_MODE_LEGACY)
 
-                    findViewById<TextView>(R.id.instructionListTextView).text =
-                        HtmlCompat.fromHtml((instructionList ?: "No instructions available.").toString(), HtmlCompat.FROM_HTML_MODE_LEGACY)
+                    val instructionLinearLayout = findViewById<LinearLayout>(R.id.instructionListLinearLayout)
+
+                    for(individualInstruction in instructionListArray) {
+                        val instructionBox = CheckBox(this@RecipeDetailActivity)
+                        instructionBox.text = individualInstruction
+                        instructionLinearLayout.addView(instructionBox)
+                    }
                 }
             } catch (e: Exception) {
                 // If there's an error, show a message to the user
@@ -167,18 +173,29 @@ class RecipeDetailActivity : AppCompatActivity() {
             val totalIngredientsString = "<b>Total Number of Ingredients:</b> $totalIngredients<br><br>"
 
             val instructionList = StringBuilder()
-            val ingredientList = StringBuilder()
 
             val ingredientListArray = ArrayList<String>()
+            val instructionListArray = ArrayList<String>()
 
-            for  (i in 0 until ingredientsArray.length()) {
+            for(i in 0 until ingredientsArray.length()) {
                 val ingredient = ingredientsArray.getJSONObject(i)
                 val ingredientInfo = ingredient.getString("original")
                 ingredientListArray.add(ingredientInfo)
             }
 
+            for(i in 0 until analyzedInstructionSteps.length()) {
+                val analyzedInstructions = analyzedInstructionSteps.getJSONObject(i)
+                val instructionNumber = analyzedInstructions.getInt("number").toString()
+                val instructionStep = analyzedInstructions.getString("step")
+                val numberAndInstruction = buildString {
+                    append(instructionNumber)
+                    append(". ")
+                    append(instructionStep)
+                 }
+                instructionListArray.add(numberAndInstruction)
+            }
 
-
+            /*
             for  (i in 0 until analyzedInstructionSteps.length()) {
                 val analyzedInstructions = analyzedInstructionSteps.getJSONObject(i)
                 val instructionNumber = analyzedInstructions.getInt("number")
@@ -186,8 +203,9 @@ class RecipeDetailActivity : AppCompatActivity() {
                 instructionList.append(instructionNumber).append(". ")
                     .append(instructionStep).append("<br><br>")
             }
+             */
 
-                return arrayOf(recipeTitle, recipeImage, totalIngredientsString, instructionList.toString(), ingredientListArray)
+                return arrayOf(recipeTitle, recipeImage, totalIngredientsString, instructionListArray, ingredientListArray)
         } else {
             throw Exception("Failed to fetch recipe details. HTTP Code: ${connection.responseCode}")
         }
