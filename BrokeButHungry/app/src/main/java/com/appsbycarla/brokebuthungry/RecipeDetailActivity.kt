@@ -172,8 +172,6 @@ class RecipeDetailActivity : AppCompatActivity() {
             val totalIngredients = ingredientsArray.length() // Added
             val totalIngredientsString = "<b>Total Number of Ingredients:</b> $totalIngredients<br><br>"
 
-            val instructionList = StringBuilder()
-
             val ingredientListArray = ArrayList<String>()
             val instructionListArray = ArrayList<String>()
 
@@ -194,16 +192,6 @@ class RecipeDetailActivity : AppCompatActivity() {
                  }
                 instructionListArray.add(numberAndInstruction)
             }
-
-            /*
-            for  (i in 0 until analyzedInstructionSteps.length()) {
-                val analyzedInstructions = analyzedInstructionSteps.getJSONObject(i)
-                val instructionNumber = analyzedInstructions.getInt("number")
-                val instructionStep = analyzedInstructions.getString("step")
-                instructionList.append(instructionNumber).append(". ")
-                    .append(instructionStep).append("<br><br>")
-            }
-             */
 
                 return arrayOf(recipeTitle, recipeImage, totalIngredientsString, instructionListArray, ingredientListArray)
         } else {
