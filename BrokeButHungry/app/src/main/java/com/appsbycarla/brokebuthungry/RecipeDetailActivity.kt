@@ -1,24 +1,23 @@
 package com.appsbycarla.brokebuthungry
 
-import kotlinx.coroutines.*
-import java.net.HttpURLConnection
-import java.net.URL
-import java.io.BufferedReader
-import java.io.InputStreamReader
-import org.json.JSONObject
+import android.graphics.Color
+import android.graphics.Paint
 import android.os.Bundle
-import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
-import android.widget.Toast
-import android.widget.TextView
-import android.widget.ImageView
-import androidx.core.text.HtmlCompat
-import com.bumptech.glide.Glide
 import android.webkit.WebView
 import android.widget.CheckBox
+import android.widget.ImageView
 import android.widget.LinearLayout
-import org.w3c.dom.Text
-import android.graphics.Color
+import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.text.HtmlCompat
+import com.bumptech.glide.Glide
+import kotlinx.coroutines.*
+import org.json.JSONObject
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import java.net.HttpURLConnection
+import java.net.URL
 
 
 class RecipeDetailActivity : AppCompatActivity() {
@@ -66,7 +65,19 @@ class RecipeDetailActivity : AppCompatActivity() {
                     for(individualIngredient in ingredientListArray) {
                         val ingredientBox = CheckBox(this@RecipeDetailActivity)
                         ingredientBox.setTextColor(Color.BLACK)
+                        ingredientBox.textSize = 18F
                         ingredientBox.text = individualIngredient
+
+                        ingredientBox.setOnCheckedChangeListener{ _, isChecked ->
+                            if(isChecked) {
+                                ingredientBox.paintFlags = ingredientBox.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+                            }
+                            else {
+                                ingredientBox.paintFlags = ingredientBox.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
+                            }
+
+                        }
+
                         ingredientLinearLayout.addView(ingredientBox)
                     }
 
@@ -77,7 +88,20 @@ class RecipeDetailActivity : AppCompatActivity() {
 
                     for(individualInstruction in instructionListArray) {
                         val instructionBox = CheckBox(this@RecipeDetailActivity)
-                        instructionBox.text = individualInstruction
+                        instructionBox.setTextColor((Color.BLACK))
+                        instructionBox.textSize = 18F
+                        instructionBox.text = (individualInstruction + "\n")
+
+                        instructionBox.setOnCheckedChangeListener{ _, isChecked ->
+                            if(isChecked) {
+                                instructionBox.paintFlags = instructionBox.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+                            }
+                            else {
+                                instructionBox.paintFlags = instructionBox.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
+                            }
+
+                        }
+
                         instructionLinearLayout.addView(instructionBox)
                     }
                 }
