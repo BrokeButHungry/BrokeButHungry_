@@ -24,6 +24,24 @@
         android:layout_marginBottom="8dp"
         android:text="Entered passwords do not match"/>
 
+   <TextView
+        android:id="@+id/usernameError"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#FF0000"
+        android:visibility="gone"
+        android:layout_marginBottom="8dp"
+        android:text="Username already exists"/>
+
+    <TextView
+        android:id="@+id/emailError"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#FF0000"
+        android:visibility="gone"
+        android:layout_marginBottom="8dp"
+        android:text="This email is already registered"/>
+
     <EditText
         android:id="@+id/firstName"
         android:layout_width="match_parent"
@@ -87,6 +105,5 @@
         android:backgroundTint="#930019"
         android:textColor="#fefefe"
         android:layout_marginTop="16dp"/>
-
 
 </LinearLayout>

@@ -18,6 +18,7 @@ Algorithm:
 //MainActivity.kt
 package com.appsbycarla.brokebuthungry
 import android.content.Intent // for search nearby
+import android.net.Uri
 import android.os.AsyncTask
 import android.os.Bundle
 import android.widget.Button
@@ -27,7 +28,6 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.text.HtmlCompat
 import org.json.JSONObject
 import java.io.BufferedReader
@@ -48,14 +48,10 @@ class    MainActivity : AppCompatActivity() {
     private lateinit var recipeNameTextView: TextView
     private lateinit var recipeImageView: ImageView
     private lateinit var recipesLayout: LinearLayout
-    data class Recipe(val id: String, val title: String?, val imageUrl: String?)
+    data class Recipe(val id: String, val title: String?, val imageUrl: String?, val ingredients: Int?)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // Setting splash screen to be viewed before going to main page
-        Thread.sleep(1500)
-        installSplashScreen()
 
         // Set the content view to the activity's layout defined in activity_main.xml
         setContentView(R.layout.activity_main)
@@ -67,11 +63,18 @@ class    MainActivity : AppCompatActivity() {
 //        recipeImageView = findViewById(R.id.recipeImageView)
         recipesLayout = findViewById(R.id.recipesLayout)
 
-        val searchNearbyButton: Button = findViewById(R.id.btnSearchNearby)
+        /*val searchNearbyButton: Button = findViewById(R.id.btnSearchNearby)
         searchNearbyButton.setOnClickListener {
             val intent = Intent(this, SearchNearbyActivity::class.java)
             intent.putExtra("query", "supermarket")
             startActivity(intent)
+        }*/
+        val mapButton: Button = findViewById(R.id.btnSearchNearby)
+        mapButton.setOnClickListener {
+            val gmmIntentUri = Uri.parse("geo:0,0?q=supermarket")
+            val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
+            mapIntent.setPackage("com.google.android.apps.maps")
+            startActivity(mapIntent)
         }
 
         // Set a click listener for the searchButton
@@ -121,14 +124,14 @@ class    MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Searches for recipes matching the given query and returns their IDs.
-     * Author: Carla Hernandez
+     * Searches for recipes matching the given query and returns their IDs based on ingredent#
+     * Author: Carla Hernandez and James Cowman
      * @param query The query string to search for.
      * @return A list of recipe IDs matching the query or null if no results.
      */
     private fun searchRecipe(query: String): List<Recipe>? {
-        val apiKey = "b3d0fd73ebb946ca9d282a96c16e4b31" //"fa02fa2847654f40adab114f3f574335"
-        val apiUrl = "https://api.spoonacular.com/recipes/complexSearch?query=$query&apiKey=$apiKey"
+        val apiKey = "fa02fa2847654f40adab114f3f574335" //"b3d0fd73ebb946ca9d282a96c16e4b31"
+        val apiUrl = "https://api.spoonacular.com/recipes/complexSearch?query=$query&number=6&apiKey=$apiKey"
 
         val url = URL(apiUrl)
         val connection = url.openConnection() as HttpURLConnection
@@ -144,45 +147,24 @@ class    MainActivity : AppCompatActivity() {
             val results = jsonResponse.getJSONArray("results")
             val recipes = mutableListOf<Recipe>()
 
+
             // Extracting recipe information from the results.
             for (i in 0 until results.length()) {
                 val recipeJson = results.getJSONObject(i)
                 val id = recipeJson.getString("id")
                 val title = "<br><h2 style=\"color:red;\">${recipeJson.getString("title")}</h2>"
                 val imageUrl = recipeJson.getString("image")
-                recipes.add(Recipe(id, title, imageUrl))
+                val ingredientsCount = fetchingredientsCount(id)
+                recipes.add(Recipe(id, title, imageUrl, ingredientsCount))
+                //TODo
             }
+            val recipesSorted = recipes.sortedBy{ it.ingredients}
 
-            return if (recipes.isNotEmpty()) recipes else null
+            return if (recipesSorted.isNotEmpty()) recipesSorted else null
         }
         return null
     }
 
-//    private fun searchFirstRecipeId(query: String): String? {
-//        val apiKey = "fa02fa2847654f40adab114f3f574335"
-//        val apiUrl = "https://api.spoonacular.com/recipes/complexSearch?query=$query&apiKey=$apiKey"
-//
-//        val url = URL(apiUrl)
-//        val connection = url.openConnection() as HttpURLConnection
-//        connection.requestMethod = "GET"
-//
-//        // Check if the connection is successful.
-//        if (connection.responseCode == HttpURLConnection.HTTP_OK) {
-//            val reader = BufferedReader(InputStreamReader(connection.inputStream))
-//            val response = reader.readText()
-//            reader.close()
-//
-//            val jsonResponse = JSONObject(response)
-//            val results = jsonResponse.getJSONArray("results")
-//
-//            // Return the first recipe's ID or null if there are no results.
-//            if (results.length() > 0) {
-//                return results.getJSONObject(0).getString("id")
-//            }
-//        }
-//
-//        return null
-//    }
 
     /**
      * Adds a recipe to the recipesLayout LinearLayout.
@@ -230,4 +212,30 @@ class    MainActivity : AppCompatActivity() {
         startActivity(intent)
     }
 }
+/**
+ * Opens the spoonacular API to fetch an ingredients count of a selected recipe.
+ * Author: James Cowman
+ * @param recipeId The unique identifier of the recipe to be displayed in the RecipeDetailActivity.
+ */
+private fun fetchingredientsCount(recipeId: String): Int {
+    val apiKey = "fa02fa2847654f40adab114f3f574335" //"b3d0fd73ebb946ca9d282a96c16e4b31"
+    val apiUrl = "https://api.spoonacular.com/recipes/$recipeId/information?apiKey=$apiKey"
+
+    val url = URL(apiUrl)
+    val connection = url.openConnection() as HttpURLConnection
+    connection.requestMethod = "GET"
+
+    if (connection.responseCode == HttpURLConnection.HTTP_OK) {
+        val reader = BufferedReader(InputStreamReader(connection.inputStream))
+        val response = reader.readText()
+        reader.close()
+
+        val jsonResponse = JSONObject(response)
+        val ingredientsArray = jsonResponse.getJSONArray("extendedIngredients")
+        return ingredientsArray.length()
+    } else {
+        throw Exception("Failed to fetch recipe details. HTTP Code: ${connection.responseCode}")
+    }
+}
+
 

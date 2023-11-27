@@ -12,6 +12,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.coroutines.*
+import org.json.JSONObject
 import java.io.*
 import java.net.HttpURLConnection
 import java.net.URL
@@ -20,6 +21,8 @@ import java.net.URLEncoder
 class RegisterActivity : AppCompatActivity() {
 
     private lateinit var passwordError: TextView
+    private lateinit var usernameError: TextView
+    private lateinit var emailError: TextView
     private lateinit var firstName: EditText
     private lateinit var lastName: EditText
     private lateinit var userName: EditText
@@ -34,6 +37,8 @@ class RegisterActivity : AppCompatActivity() {
 
         // Initialize references to UI elements
         passwordError = findViewById(R.id.passwordError)
+        usernameError = findViewById(R.id.usernameError)
+        emailError = findViewById(R.id.emailError)
         firstName = findViewById(R.id.firstName)
         lastName = findViewById(R.id.lastName)
         userName = findViewById(R.id.userName)
@@ -49,6 +54,11 @@ class RegisterActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Handles the user registration process.
+     * Validates user input, checks password confirmation, and initiates the registration request.
+     * Author: Carla Hernandez
+     */
     private fun registerUser() {
         val fName = firstName.text.toString().trim()
         val lName = lastName.text.toString().trim()
@@ -67,7 +77,7 @@ class RegisterActivity : AppCompatActivity() {
             passwordError.visibility = View.VISIBLE
             return
         } else {
-            passwordError.visibility = View.GONE  // Hide the error message if passwords match
+            passwordError.visibility = View.GONE
         }
 
         CoroutineScope(Dispatchers.IO).launch {
@@ -79,13 +89,22 @@ class RegisterActivity : AppCompatActivity() {
                     startActivity(intent)
                     finish()
                 } else {
-                    Toast.makeText(this@RegisterActivity, "Failed to create account", Toast.LENGTH_SHORT).show()
+                    // If the account creation was not successful, the error message is shown in sendRegistrationRequest
                 }
             }
         }
     }
 
-
+    /**
+     * Sends a registration request to the server.
+     * Author: Carla Hernandez
+     * @param firstName User's first name.
+     * @param lastName User's last name.
+     * @param username User's chosen username.
+     * @param password User's chosen password.
+     * @param email User's email address.
+     * @return Boolean indicating whether the registration was successful.
+     */
     private fun sendRegistrationRequest(firstName: String, lastName: String, username: String, password: String, email: String): Boolean {
         val url = URL("https://brokebuthungry.appsbycarla.com/api.php")
         (url.openConnection() as? HttpURLConnection)?.run {
@@ -102,8 +121,34 @@ class RegisterActivity : AppCompatActivity() {
                 if (responseCode == HttpURLConnection.HTTP_OK) {
                     val response = inputStream.bufferedReader().use { it.readText() }
                     Log.d("RegisterActivity", "Server Response: $response")
-                    // Here, parse the response to check if registration was successful
-                    return true // Update this based on actual server response
+
+                    val jsonResponse = JSONObject(response)
+                    val status = jsonResponse.optString("status", "")
+                    if (status == "error") {
+                        val message = jsonResponse.optString("message", "")
+                        // Check if the error message is about the duplicate username
+                        if (message.contains("Username already exists", ignoreCase = true)) {
+                            runOnUiThread {
+                                usernameError.visibility = View.VISIBLE
+                            }
+                            return false
+                        } else {
+                            runOnUiThread {
+                                usernameError.visibility = View.GONE
+                            }
+                        }
+                        if (message.contains("Email is already registered", ignoreCase = true)) {
+                            runOnUiThread {
+                                emailError.visibility = View.VISIBLE
+                            }
+                            return false
+                        }  else {
+                            runOnUiThread {
+                                emailError.visibility = View.GONE
+                            }
+                        }
+                    }
+                    return status == "success"
                 }
             } catch (e: IOException) {
                 e.printStackTrace()
@@ -113,6 +158,7 @@ class RegisterActivity : AppCompatActivity() {
         }
         return false
     }
+
 
 
 }

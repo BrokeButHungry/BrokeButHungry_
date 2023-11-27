@@ -15,6 +15,7 @@ import java.net.URLEncoder
 import android.util.Log
 import android.view.View
 import android.widget.TextView
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 
 class LoginActivity : AppCompatActivity() {
 
@@ -27,6 +28,10 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        Thread.sleep(1500)
+        installSplashScreen()
+
         setContentView(R.layout.activity_login)
 
         usernameEditText = findViewById(R.id.usernameEditText)
@@ -40,13 +45,14 @@ class LoginActivity : AppCompatActivity() {
             performLogin()
         }
 
-        // Set click listener for the register button
+        // Navigate to RegisterActivity when the register button is clicked
         registerButton.setOnClickListener {
             // Start RegisterActivity
             val intent = Intent(this, RegisterActivity::class.java)
             startActivity(intent)
         }
 
+        // Navigate to ResetPasswordActivity when the reset password button is clicked
         resetPasswordButton.setOnClickListener {
             // Start ResetPasswordActivity
             val intent = Intent(this, ResetPasswordActivity::class.java)
@@ -54,6 +60,13 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Initiates the login process.
+     * Author: Carla Hernandez
+     * - Validates the input fields for username and password.
+     * - Calls `sendLoginRequest` to perform the network request.
+     * - Handles UI updates based on the login success or failure.
+     */
     private fun performLogin() {
         val username = usernameEditText.text.toString()
         val password = passwordEditText.text.toString()
@@ -82,6 +95,13 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Sends a login request to the server.
+     * Author: Carla Hernandez
+     * @param username The username entered by the user.
+     * @param password The password entered by the user.
+     * @return Boolean indicating whether the login was successful.
+     */
     private fun sendLoginRequest(username: String, password: String): Boolean {
         Log.d("LoginActivity", "Attempting to login with username: $username")
         val url = URL("https://brokebuthungry.appsbycarla.com/api.php")
