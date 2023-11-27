@@ -23,7 +23,7 @@
             android:value="${MAPS_API_KEY}" />-->
 
         <activity
-            android:name=".MainActivity"
+            android:name=".LoginActivity"
             android:theme="@style/Theme.App.SplashScreen"
             android:exported="true">
             <intent-filter>
@@ -35,6 +35,9 @@
 
         <activity android:name=".SearchNearbyActivity"/> <!-- NEW -->
         <activity android:name=".RecipeDetailActivity"/>
+        <activity android:name=".RegisterActivity"/>
+        <activity android:name=".ResetPasswordActivity"/>
+        <activity android:name=".MainActivity"/>
 
     </application>
 
