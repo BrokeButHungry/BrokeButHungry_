@@ -123,6 +123,7 @@ class    MainActivity : AppCompatActivity() {
         }
     }
 
+
     /**
      * Searches for recipes matching the given query and returns their IDs based on ingredent#
      * Author: Carla Hernandez and James Cowman
