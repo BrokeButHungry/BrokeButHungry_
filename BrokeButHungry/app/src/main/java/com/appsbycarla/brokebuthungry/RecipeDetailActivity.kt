@@ -14,6 +14,7 @@ import android.widget.ImageView
 import androidx.core.text.HtmlCompat
 import com.bumptech.glide.Glide
 import android.webkit.WebView
+import android.widget.CheckBox
 
 
 class RecipeDetailActivity : AppCompatActivity() {
@@ -36,6 +37,42 @@ class RecipeDetailActivity : AppCompatActivity() {
      * Author: Carla Hernandez
      * @param recipeId The unique identifier of the recipe for which details are to be fetched.
      */
+
+    private fun fetchAndDisplayRecipeDetails(recipeId: String) {
+        // fetch the data in the background
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                //recipeTitle, recipeImage, totalIngredientsString, instructionListString, instructionList.toString(), ingredientListString, ingredientList.toString()
+                val (recipeTitle, recipeImage, totalIngredientString, instructionList, ingredientList) = fetchData(recipeId)
+
+                // Switch to the main thread to update the UI
+                withContext(Dispatchers.Main) {
+                    findViewById<TextView>(R.id.recipeTitleTextView).text = HtmlCompat.fromHtml(recipeTitle, HtmlCompat.FROM_HTML_MODE_LEGACY)
+
+                    // using Glide to load images
+                    Glide.with(this@RecipeDetailActivity).load(recipeImage).into(findViewById<ImageView>(R.id.recipeImageView))
+
+                    findViewById<TextView>(R.id.totalIngredientString).text =
+                        HtmlCompat.fromHtml(totalIngredientString ?: "Total number of ingredients not available.", HtmlCompat.FROM_HTML_MODE_LEGACY)
+
+                    findViewById<TextView>(R.id.ingredientListTextView).text =
+                        HtmlCompat.fromHtml(ingredientList ?: "No ingredients available.", HtmlCompat.FROM_HTML_MODE_LEGACY)
+
+                    findViewById<TextView>(R.id.instructionListTextView).text =
+                        HtmlCompat.fromHtml(instructionList ?: "No instructions available.", HtmlCompat.FROM_HTML_MODE_LEGACY)
+                }
+            } catch (e: Exception) {
+                // If there's an error, show a message to the user
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(this@RecipeDetailActivity, "Failed to load recipe details.", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+    }
+
+    //***************** SAFE AND WORKING CODE BELOW ****************
+
+    /*
     private fun fetchAndDisplayRecipeDetails(recipeId: String) {
         // fetch the data in the background
         CoroutineScope(Dispatchers.IO).launch {
@@ -61,6 +98,7 @@ class RecipeDetailActivity : AppCompatActivity() {
             }
         }
     }
+     */
 
     /**
      * Fetching nutritional label for each recipe via Spoonacular API
@@ -68,7 +106,7 @@ class RecipeDetailActivity : AppCompatActivity() {
 
     private fun fetchNutritonalLabel(recipeId: String): String {
         val apiKey = "420aea8d55f9424b962c04001ef88f3a"
-        val apiUrl = "https://api.spoonacular.com/recipes/$recipeId/nutritionLabel?apiKey=$apiKey"
+         val apiUrl = "https://api.spoonacular.com/recipes/$recipeId/nutritionLabel?apiKey=$apiKey"
 
         val url = URL(apiUrl)
         val connection = url.openConnection() as HttpURLConnection
@@ -118,6 +156,63 @@ class RecipeDetailActivity : AppCompatActivity() {
      *  - Second: The URL to the recipe's image (String?) which can be null.
      *  - Third: A formatted string that combines the ingredients list and the instructions (String?) which can be null.
      */
+
+    private suspend fun fetchData(recipeId: String): Array<String> {
+        val apiKey = "b3d0fd73ebb946ca9d282a96c16e4b31" //"fa02fa2847654f40adab114f3f574335"
+        val apiUrl = "https://api.spoonacular.com/recipes/$recipeId/information?apiKey=$apiKey"
+
+        val url = URL(apiUrl)
+        val connection = url.openConnection() as HttpURLConnection
+        connection.requestMethod = "GET"
+
+        if (connection.responseCode == HttpURLConnection.HTTP_OK) {
+            val reader = BufferedReader(InputStreamReader(connection.inputStream))
+            val response = reader.readText()
+            reader.close()
+
+            val jsonResponse = JSONObject(response)
+
+            val recipeTitle = "<br><b>${jsonResponse.getString("title")}</b><br><br>"
+            val ingredientsArray = jsonResponse.getJSONArray("extendedIngredients")
+            val instructions = jsonResponse.getJSONArray("analyzedInstructions")
+            val analyzedInstructions = instructions.getJSONObject(0)
+            val analyzedInstructionSteps = analyzedInstructions.getJSONArray("steps")
+            val recipeImage = jsonResponse.getString("image")
+            val totalIngredients = ingredientsArray.length() // Added
+            val totalIngredientsString = "<b>Total Number of Ingredients:</b> $totalIngredients<br><br>"
+
+            val sb = StringBuilder()
+            val instructionList = StringBuilder()
+            val ingredientList = StringBuilder()
+            //sb.append("<br><b>$recipeTitle</b><br><br>") // Added
+            //sb.append("<b>Total Number of Ingredients:</b> $totalIngredients<br><br>") // Added
+            //sb.append("<b>Ingredients:</b><br>")
+
+            for (i in 0 until ingredientsArray.length()) {
+                val ingredient = ingredientsArray.getJSONObject(i)
+                val ingredientInfo = ingredient.getString("original")
+                ingredientList.append(ingredientInfo).append("<br><br>")
+            }
+
+            //sb.append("<br><b>Numbered Instructions: </b><br>")
+
+            for (i in 0 until analyzedInstructionSteps.length()) {
+                val analyzedInstructions = analyzedInstructionSteps.getJSONObject(i)
+                val instructionNumber = analyzedInstructions.getInt("number")
+                val instructionStep = analyzedInstructions.getString("step")
+                instructionList.append(instructionNumber).append(". ")
+                    .append(instructionStep).append("<br><br>")
+            }
+
+                return arrayOf(recipeTitle, recipeImage, totalIngredientsString, instructionList.toString(), ingredientList.toString())
+        } else {
+            throw Exception("Failed to fetch recipe details. HTTP Code: ${connection.responseCode}")
+        }
+    }
+
+    //*************** SAFE CODE WORKING BELOW ***************
+
+    /*
     private suspend fun fetchData(recipeId: String): Triple<String, String?, String?> {
         val apiKey = "b3d0fd73ebb946ca9d282a96c16e4b31" //"fa02fa2847654f40adab114f3f574335"
         val apiUrl = "https://api.spoonacular.com/recipes/$recipeId/information?apiKey=$apiKey"
@@ -135,27 +230,43 @@ class RecipeDetailActivity : AppCompatActivity() {
 
             val recipeTitle = "<br><b>${jsonResponse.getString("title")}</b><br><br>"
             val ingredientsArray = jsonResponse.getJSONArray("extendedIngredients")
-            val instructions = jsonResponse.getString("instructions")
+            val instructions = jsonResponse.getJSONArray("analyzedInstructions")
+            val analyzedInstructions = instructions.getJSONObject(0)
+            val analyzedInstructionSteps = analyzedInstructions.getJSONArray("steps")
             val recipeImage = jsonResponse.getString("image")
             val totalIngredients = ingredientsArray.length() // Added
 
             val sb = StringBuilder()
+<<<<<<< Updated upstream
             sb.append("<br><b>$recipeTitle</b><br><br>") // Added
-            sb.append("<b>Total Number of Ingredients:</b> $totalIngredients<br>") // Added
+
+=======
+            //sb.append("<br><b>$recipeTitle</b><br><br>") // Added
+>>>>>>> Stashed changes
+            sb.append("<b>Total Number of Ingredients:</b> $totalIngredients<br><br>") // Added
+
             sb.append("<b>Ingredients:</b><br>")
 
             for (i in 0 until ingredientsArray.length()) {
                 val ingredient = ingredientsArray.getJSONObject(i)
                 val ingredientInfo = ingredient.getString("original")
-                sb.append(ingredientInfo).append("<br>")
+                sb.append(ingredientInfo).append("<br><br>")
             }
 
-            sb.append("<br><b>Instructions:</b><br><br>")
-                .append(instructions.replace("\n", "<br>"))
+            sb.append("<br><b>Numbered Instructions: </b><br>")
+
+            for (i in 0 until analyzedInstructionSteps.length()) {
+                val analyzedInstructions = analyzedInstructionSteps.getJSONObject(i)
+                val instructionNumber = analyzedInstructions.getInt("number")
+                val instructionStep = analyzedInstructions.getString("step")
+                sb.append(instructionNumber).append(". ")
+                    .append(instructionStep).append("<br><br>")
+            }
 
             return Triple(recipeTitle, recipeImage, sb.toString())
         } else {
             throw Exception("Failed to fetch recipe details. HTTP Code: ${connection.responseCode}")
         }
     }
+     */
 }

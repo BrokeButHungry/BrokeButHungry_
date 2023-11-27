@@ -22,19 +22,27 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="${MAPS_API_KEY}" />-->
 
+        <!-- LoginActivity is the new launcher activity -->
         <activity
-            android:name=".MainActivity"
-            android:theme="@style/Theme.App.SplashScreen"
+            android:name=".LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <activity android:name=".SearchNearbyActivity"/> <!-- NEW -->
+        <!-- MainActivity is no longer the launcher activity -->
+        <activity
+            android:name=".MainActivity"
+            android:theme="@style/Theme.App.SplashScreen"
+            android:exported="true"/>
+
+        <activity android:name=".SearchNearbyActivity"/>
         <activity android:name=".RecipeDetailActivity"/>
+        <activity android:name=".RegisterActivity"/>
+        <activity android:name=".ResetPasswordActivity" />
+
 
     </application>
 
