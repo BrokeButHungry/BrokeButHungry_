@@ -28,6 +28,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.text.HtmlCompat
 import org.json.JSONObject
 import java.io.BufferedReader
@@ -37,8 +38,8 @@ import java.net.URL
 import org.json.JSONArray
 import kotlinx.coroutines.*
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+
 
 
 class    MainActivity : AppCompatActivity() {
@@ -52,6 +53,11 @@ class    MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+
+        // Setting splash screen to be viewed before going to main page
+        Thread.sleep(1500)
+        installSplashScreen()
 
         // Set the content view to the activity's layout defined in activity_main.xml
         setContentView(R.layout.activity_main)
@@ -131,7 +137,7 @@ class    MainActivity : AppCompatActivity() {
      * @return A list of recipe IDs matching the query or null if no results.
      */
     private fun searchRecipe(query: String): List<Recipe>? {
-        val apiKey = "fa02fa2847654f40adab114f3f574335" //"b3d0fd73ebb946ca9d282a96c16e4b31"
+        val apiKey = "d567d4fc3c5e43edbcd15915fd46719b" //"fa02fa2847654f40adab114f3f574335"
         val apiUrl = "https://api.spoonacular.com/recipes/complexSearch?query=$query&number=6&apiKey=$apiKey"
 
         val url = URL(apiUrl)
@@ -219,7 +225,7 @@ class    MainActivity : AppCompatActivity() {
  * @param recipeId The unique identifier of the recipe to be displayed in the RecipeDetailActivity.
  */
 private fun fetchingredientsCount(recipeId: String): Int {
-    val apiKey = "fa02fa2847654f40adab114f3f574335" //"b3d0fd73ebb946ca9d282a96c16e4b31"
+    val apiKey = "d567d4fc3c5e43edbcd15915fd46719b" //"fa02fa2847654f40adab114f3f574335"
     val apiUrl = "https://api.spoonacular.com/recipes/$recipeId/information?apiKey=$apiKey"
 
     val url = URL(apiUrl)
